@@ -1,0 +1,38 @@
+{
+  "name": "stela",
+  "version": "0.1.0",
+  "description": "Git blame for AI answers — document preprocessing with provenance tracking",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "stela": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "rag",
+    "chunking",
+    "provenance",
+    "preprocessing",
+    "llm"
+  ],
+  "author": "Chunky River Computer Co.",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.20.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
