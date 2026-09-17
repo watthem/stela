@@ -10,12 +10,14 @@ function scoreBoundary(text: string): { score: number; reasons: AssessmentReason
   const reasons: AssessmentReason[] = [];
   let score = 1.0;
 
-  if (/\S$/.test(text) && !/[.!?:;,\s]$/.test(text)) {
+  const isHeading = /^\s*#/.test(text);
+
+  if (!isHeading && /\S$/.test(text) && !/[.!?:;,\s]$/.test(text)) {
     score -= 0.3;
     reasons.push("mid_word_boundary");
   }
 
-  if (text.length > 0 && !/[.!?]/.test(text)) {
+  if (!isHeading && text.length > 0 && !/[.!?]/.test(text)) {
     score -= 0.15;
     reasons.push("mid_sentence_boundary");
   }

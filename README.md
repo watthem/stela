@@ -59,6 +59,8 @@ for (const item of result.results) {
 | Wikipedia 100K articles | 1.2M | 46.5 | 0 |
 | SEC 10-K filings | 521K | 49.3 | 0 |
 
+MB/s is pipeline processing time only, measured via `--stats`. Wall-clock throughput via `npx` will be lower due to Node.js startup overhead. Run `npm install -g @watthem/stela` to eliminate startup cost for repeated use.
+
 Requires Node.js 22+.
 
 ## License

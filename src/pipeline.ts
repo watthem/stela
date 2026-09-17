@@ -25,6 +25,12 @@ const CLEAN_VALIDATION: ChunkValidation = {
   warnings: [],
 };
 
+const CLEAN_ASSESSMENT: ChunkAssessment = {
+  verdict: "pass",
+  confidence: { score: 1, boundaryScore: 1, completenessScore: 1, hashVerified: true },
+  reasons: ["clean"],
+};
+
 /**
  * Combined validate + assess in a single text scan.
  *
@@ -44,26 +50,7 @@ function validateAndAssess(text: string): {
   const reasons: AssessmentReason[] = [];
   let boundaryScore = 1.0;
 
-  // End-of-word check (shared between validate and assess)
-  if (textLen > 0) {
-    const lastCode = text.charCodeAt(textLen - 1);
-    // .=46 !=33 ?=63 :=58 ;=59 ,=44
-    const isPunct =
-      lastCode === 46 ||
-      lastCode === 33 ||
-      lastCode === 63 ||
-      lastCode === 58 ||
-      lastCode === 59 ||
-      lastCode === 44;
-    if (lastCode > 32 && !isPunct) {
-      warnings.push("may end mid-word");
-      boundaryClean = false;
-      boundaryScore -= 0.3;
-      reasons.push("mid_word_boundary");
-    }
-  }
-
-  // Single scan for brackets, sentence-ending punctuation, and trim bounds.
+  // Single scan for brackets, sentence-ending punctuation, trim bounds, and heading detection.
   let hasSentenceEnd = false;
   let opens = 0;
   let closes = 0;
@@ -84,7 +71,30 @@ function validateAndAssess(text: string): {
   const trimmedLen =
     firstNonSpace === -1 ? 0 : lastNonSpace - firstNonSpace + 1;
 
-  if (textLen > 0 && !hasSentenceEnd) {
+  // Headings (lines starting with #) are structural markers, not sentences.
+  // Don't penalize them for lacking sentence-ending punctuation or trailing punct.
+  const isHeading = firstNonSpace !== -1 && text.charCodeAt(firstNonSpace) === 35; // #
+
+  // End-of-word check — skip for headings (they end with complete words, not truncated text)
+  if (textLen > 0 && !isHeading) {
+    const lastCode = text.charCodeAt(textLen - 1);
+    // .=46 !=33 ?=63 :=58 ;=59 ,=44
+    const isPunct =
+      lastCode === 46 ||
+      lastCode === 33 ||
+      lastCode === 63 ||
+      lastCode === 58 ||
+      lastCode === 59 ||
+      lastCode === 44;
+    if (lastCode > 32 && !isPunct) {
+      warnings.push("may end mid-word");
+      boundaryClean = false;
+      boundaryScore -= 0.3;
+      reasons.push("mid_word_boundary");
+    }
+  }
+
+  if (textLen > 0 && !hasSentenceEnd && !isHeading) {
     boundaryScore -= 0.15;
     reasons.push("mid_sentence_boundary");
   }
@@ -169,8 +179,17 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
       : byteMap![charStart + text.length];
     const hash = contentHash(text);
 
-    // Combined validate + assess: one text scan instead of two.
-    const { validation, assessment } = validateAndAssess(text);
+    let validation: ChunkValidation;
+    let assessment: ChunkAssessment;
+
+    if (doValidate) {
+      const result = validateAndAssess(text);
+      validation = result.validation;
+      assessment = result.assessment;
+    } else {
+      validation = CLEAN_VALIDATION;
+      assessment = CLEAN_ASSESSMENT;
+    }
 
     totalScore += assessment.confidence.score;
     const v = assessment.verdict;
@@ -189,7 +208,7 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
         contentHash: hash,
         strategy,
       },
-      validation: doValidate ? validation : CLEAN_VALIDATION,
+      validation,
       assessment,
     };
   }
