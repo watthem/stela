@@ -1,8 +1,9 @@
-import { createHash } from "node:crypto";
+import { createHash, hash as cryptoHash } from "node:crypto";
 import type { SourceProvenance, Strategy } from "./types.js";
 
 export function contentHash(text: string): string {
-  return createHash("sha256").update(text).digest("hex");
+  // One-shot API (Node 21.7+) avoids Hash object allocation overhead.
+  return cryptoHash("sha256", text, "hex");
 }
 
 /**

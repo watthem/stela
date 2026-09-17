@@ -24,8 +24,10 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
   // Split with character-offset tracking — no Buffer.indexOf needed.
   const spans = splitWithOffsets(source, options.strategy, options.maxTokens);
 
-  // Build char→byte mapping once for the entire source (O(n) build, O(1) lookup).
-  const byteMap = buildCharToByteMap(source);
+  // ASCII fast path: when every character is one byte, char offsets ARE byte
+  // offsets and we can skip the Uint32Array mapping entirely.
+  const isAscii = Buffer.byteLength(source) === source.length;
+  const byteMap = isAscii ? null : buildCharToByteMap(source);
 
   const len = spans.length;
   const chunks: Chunk[] = new Array(len);
@@ -41,8 +43,8 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
 
   for (let i = 0; i < len; i++) {
     const { text, charStart } = spans[i];
-    const byteStart = byteMap[charStart];
-    const byteEnd = byteMap[charStart + text.length];
+    const byteStart = isAscii ? charStart : byteMap![charStart];
+    const byteEnd = isAscii ? charStart + text.length : byteMap![charStart + text.length];
     const hash = contentHash(text);
 
     // Hash is trivially verified — we just computed it from the same text.
