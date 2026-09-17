@@ -1,9 +1,16 @@
 import { randomUUID } from "node:crypto";
-import type { Chunk, ChunkValidation, PipelineResult, PipelineStats, Strategy } from "./types.js";
+import type {
+  AssessmentReason,
+  Chunk,
+  ChunkAssessment,
+  ChunkValidation,
+  ChunkVerdict,
+  PipelineResult,
+  PipelineStats,
+  Strategy,
+} from "./types.js";
 import { splitWithOffsets } from "./chunk.js";
 import { buildCharToByteMap, contentHash } from "./provenance.js";
-import { validate } from "./validate.js";
-import { assess } from "./assess.js";
 
 export interface PipelineOptions {
   strategy: Strategy;
@@ -17,6 +24,119 @@ const CLEAN_VALIDATION: ChunkValidation = {
   complete: true,
   warnings: [],
 };
+
+/**
+ * Combined validate + assess in a single text scan.
+ *
+ * The original validate() and assess() duplicate work: both check
+ * end-of-word boundaries and count brackets via text.match() (which
+ * allocates an array of every match).  This function replaces both with
+ * one charCode loop and no regex-allocated arrays.
+ */
+function validateAndAssess(text: string): {
+  validation: ChunkValidation;
+  assessment: ChunkAssessment;
+} {
+  const textLen = text.length;
+  const warnings: string[] = [];
+  let boundaryClean = true;
+  let complete = true;
+  const reasons: AssessmentReason[] = [];
+  let boundaryScore = 1.0;
+
+  // End-of-word check (shared between validate and assess)
+  if (textLen > 0) {
+    const lastCode = text.charCodeAt(textLen - 1);
+    // .=46 !=33 ?=63 :=58 ;=59 ,=44
+    const isPunct =
+      lastCode === 46 ||
+      lastCode === 33 ||
+      lastCode === 63 ||
+      lastCode === 58 ||
+      lastCode === 59 ||
+      lastCode === 44;
+    if (lastCode > 32 && !isPunct) {
+      warnings.push("may end mid-word");
+      boundaryClean = false;
+      boundaryScore -= 0.3;
+      reasons.push("mid_word_boundary");
+    }
+  }
+
+  // Single scan for brackets, sentence-ending punctuation, and trim bounds.
+  let hasSentenceEnd = false;
+  let opens = 0;
+  let closes = 0;
+  let firstNonSpace = -1;
+  let lastNonSpace = -1;
+
+  for (let i = 0; i < textLen; i++) {
+    const c = text.charCodeAt(i);
+    if (c === 46 || c === 33 || c === 63) hasSentenceEnd = true; // . ! ?
+    if (c === 40 || c === 91 || c === 123) opens++; // ( [ {
+    else if (c === 41 || c === 93 || c === 125) closes++; // ) ] }
+    if (c > 32) {
+      if (firstNonSpace === -1) firstNonSpace = i;
+      lastNonSpace = i;
+    }
+  }
+
+  const trimmedLen =
+    firstNonSpace === -1 ? 0 : lastNonSpace - firstNonSpace + 1;
+
+  if (textLen > 0 && !hasSentenceEnd) {
+    boundaryScore -= 0.15;
+    reasons.push("mid_sentence_boundary");
+  }
+
+  if (opens !== closes) {
+    warnings.push("unbalanced brackets");
+    complete = false;
+    boundaryScore -= 0.25;
+    reasons.push("unbalanced_brackets");
+  }
+
+  if (trimmedLen === 0) {
+    boundaryScore = 0;
+    reasons.push("empty_chunk");
+  }
+
+  if (reasons.length === 0) reasons.push("clean");
+  boundaryScore = Math.max(0, boundaryScore);
+
+  // Completeness score
+  let completenessScore = 1.0;
+  if (trimmedLen === 0) {
+    completenessScore = 0;
+  } else {
+    if (trimmedLen < 20) completenessScore -= 0.2;
+    const firstCharCode = text.charCodeAt(firstNonSpace);
+    if (firstCharCode >= 97 && firstCharCode <= 122) completenessScore -= 0.15; // a-z
+    completenessScore = Math.max(0, completenessScore);
+  }
+
+  // hashVerified is always true in pipeline (we just computed the hash)
+  const score = boundaryScore * 0.5 + completenessScore * 0.3 + 0.2;
+
+  let verdict: ChunkVerdict;
+  if (score >= 0.8) verdict = "pass";
+  else if (score >= 0.5) verdict = "flag";
+  else verdict = "reject";
+
+  return {
+    validation: { boundaryClean, complete, warnings },
+    assessment: {
+      verdict,
+      confidence: {
+        score,
+        boundaryScore,
+        completenessScore,
+        hashVerified: true,
+      },
+      reasons,
+    },
+  };
+}
 
 export function run(source: string, options: PipelineOptions): PipelineResult {
   const start = performance.now();
@@ -44,11 +164,13 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
   for (let i = 0; i < len; i++) {
     const { text, charStart } = spans[i];
     const byteStart = isAscii ? charStart : byteMap![charStart];
-    const byteEnd = isAscii ? charStart + text.length : byteMap![charStart + text.length];
+    const byteEnd = isAscii
+      ? charStart + text.length
+      : byteMap![charStart + text.length];
     const hash = contentHash(text);
 
-    // Hash is trivially verified — we just computed it from the same text.
-    const assessment = assess(text, true);
+    // Combined validate + assess: one text scan instead of two.
+    const { validation, assessment } = validateAndAssess(text);
 
     totalScore += assessment.confidence.score;
     const v = assessment.verdict;
@@ -67,7 +189,7 @@ export function run(source: string, options: PipelineOptions): PipelineResult {
         contentHash: hash,
         strategy,
       },
-      validation: doValidate ? validate(text) : CLEAN_VALIDATION,
+      validation: doValidate ? validation : CLEAN_VALIDATION,
       assessment,
     };
   }
