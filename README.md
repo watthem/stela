@@ -7,11 +7,11 @@ stela chunks documents and tracks exactly which bytes produced each chunk — co
 ## Quick start
 
 ```bash
-npx stela README.md
+npx @watthem/stela README.md
 ```
 
 ```bash
-npx stela --strategy heading --json report.pdf
+npx @watthem/stela --strategy heading --json report.pdf
 ```
 
 ## What it does
@@ -38,7 +38,7 @@ Options:
 ## Library
 
 ```typescript
-import { run } from "stela";
+import { run } from "@watthem/stela";
 
 const result = await run(documentText, {
   strategy: "paragraph",

@@ -1,5 +1,5 @@
 {
-  "name": "stela",
+  "name": "@watthem/stela",
   "version": "0.1.0",
   "description": "Git blame for AI answers — document preprocessing with provenance tracking",
   "type": "module",
