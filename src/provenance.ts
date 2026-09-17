@@ -5,6 +5,36 @@ export function contentHash(text: string): string {
   return createHash("sha256").update(text).digest("hex");
 }
 
+/**
+ * Build an array that maps character (UTF-16 code-unit) index → UTF-8
+ * byte offset.  O(n) build, O(1) lookup.
+ */
+export function buildCharToByteMap(source: string): Uint32Array {
+  const len = source.length;
+  const map = new Uint32Array(len + 1);
+  let byteOffset = 0;
+  for (let i = 0; i < len; i++) {
+    map[i] = byteOffset;
+    const code = source.charCodeAt(i);
+    if (code <= 0x7f) {
+      byteOffset += 1;
+    } else if (code <= 0x7ff) {
+      byteOffset += 2;
+    } else if (code >= 0xd800 && code <= 0xdbff) {
+      // High surrogate of a pair — 4 bytes in UTF-8.
+      byteOffset += 4;
+      i++;
+      if (i < len) map[i] = byteOffset;
+    } else {
+      byteOffset += 3;
+    }
+  }
+  map[len] = byteOffset;
+  return map;
+}
+
+/* ── Legacy helpers (kept for public API) ────────────────────────────── */
+
 export function byteRange(
   source: string,
   chunk: string,
