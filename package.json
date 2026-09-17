@@ -1,7 +1,7 @@
 {
   "name": "@watthem/stela",
   "version": "0.1.1",
-  "description": "Git blame for AI answers — document preprocessing with provenance tracking",
+  "description": "Git blame for AI answers \u2014 document preprocessing with provenance tracking",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs"
   },
   "keywords": [
     "rag",
@@ -35,5 +37,8 @@
     "@types/node": "^22.20.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -36,7 +36,7 @@ for (const strategy of strategies) {
   const s = lastResult.stats;
 
   console.log(
-    `${strategy.padEnd(13)}| ${String(s.totalChunks).padEnd(7)}| ${String(s.passed).padEnd(7)}| ${String(s.flagged).padEnd(8)}| ${String(s.rejected).padEnd(9)}| ${s.meanConfidence.toFixed(4).padEnd(11)}| ${avgMs.toFixed(1).padStart(7)} | ${mbPerSec.toFixed(1)}`
+    `${strategy.padEnd(13)}| ${String(s.totalChunks).padEnd(7)}| ${String(s.passed).padEnd(7)}| ${String(s.flagged).padEnd(8)}| ${String(s.rejected).padEnd(9)}| ${(s.meanConfidence?.toFixed(4) ?? "n/a").padEnd(11)}| ${avgMs.toFixed(1).padStart(7)} | ${mbPerSec.toFixed(1)}`
   );
 }
 
@@ -55,3 +55,4 @@ const byteRangeOk = result.chunks.every(c => {
   return slice === c.text;
 });
 console.log(`Byte-range round-trip: ${byteRangeOk ? "PASS" : "FAIL"}`);
+
