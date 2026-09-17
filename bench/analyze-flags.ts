@@ -22,6 +22,7 @@ const flaggedChunks = result.chunks.filter((c) => c.assessment.verdict === "flag
 for (const c of flaggedChunks.slice(0, 8)) {
   const text = c.text.slice(0, 120).replace(/\n/g, "\\n");
   console.log(
-    `\nFlagged [${c.assessment.reasons}] conf=${c.assessment.confidence.score.toFixed(3)}: ${text}`
+    `\nFlagged [${c.assessment.reasons}] conf=${c.assessment.confidence.score?.toFixed(3) ?? "n/a"}: ${text}`
   );
 }
+

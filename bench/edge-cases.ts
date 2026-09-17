@@ -173,13 +173,15 @@ test("tsconfig.json as input / sentence", () => {
   assert(roundTrip(tsconfig, "sentence"), "byte-range round-trip failed for tsconfig.json");
 });
 
-// --- Check that validate=false skips validation but keeps assessment ---
+// --- Skipped validation is explicit; provenance remains verified ---
 console.log("-- validate=false --");
-test("validate=false still produces assessment", () => {
+test("validate=false reports skipped quality", () => {
   const result = run("Some text here.", { strategy: "paragraph", file: "test", validate: false });
   const chunk = result.chunks[0];
-  assert(chunk.validation.boundaryClean === true, "should have clean validation when disabled");
-  assert(chunk.assessment.verdict !== undefined, "should still have assessment verdict");
+  assert(chunk.validation.status === "skipped", "validation should be skipped");
+  assert(chunk.validation.boundaryClean === null, "unchecked quality should be null");
+  assert(chunk.assessment.confidence.hashVerified, "provenance must still be verified");
+  assert(chunk.assessment.verdict === "skipped", "assessment should be skipped");
 });
 
 // --- NDJSON output format check ---
@@ -208,3 +210,4 @@ test("chunk matches types.ts contract", () => {
 
 console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
 process.exit(failed > 0 ? 1 : 0);
+

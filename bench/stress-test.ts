@@ -76,7 +76,7 @@ function processDataset(
       totalPassed += r.stats.passed;
       totalFlagged += r.stats.flagged;
       totalRejected += r.stats.rejected;
-      totalConfidence += r.stats.meanConfidence * r.stats.totalChunks;
+      totalConfidence += (r.stats.meanConfidence ?? 0) * r.stats.totalChunks;
       totalMs += r.stats.processingMs;
 
       totalProvFailures += verifyProvenance(doc, r);
@@ -198,3 +198,4 @@ async function main() {
 }
 
 main().catch(console.error);
+

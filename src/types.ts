@@ -1,4 +1,5 @@
-export type Strategy = "heading" | "paragraph" | "sentence" | "token";
+/** token is a deprecated alias for word; neither measures model tokens. */
+export type Strategy = "heading" | "paragraph" | "sentence" | "word" | "token";
 
 export interface SourceProvenance {
   file: string;
@@ -11,59 +12,47 @@ export interface SourceProvenance {
 }
 
 export interface ChunkValidation {
-  boundaryClean: boolean;
-  complete: boolean;
+  status: "checked" | "skipped";
+  boundaryClean: boolean | null;
+  complete: boolean | null;
   warnings: string[];
 }
 
-/** Calibrated confidence scoring inspired by RLCD. */
+/** Heuristic quality scores, not calibrated probabilities of correctness. */
 export interface ProvenanceConfidence {
-  /** 0-1, calibrated: 0.9 means right 90% of the time. */
-  score: number;
-  boundaryScore: number;
-  completenessScore: number;
+  /** Null when quality assessment was skipped. */
+  score: number | null;
+  boundaryScore: number | null;
+  completenessScore: number | null;
+  /** Whether source-slice bytes and their SHA-256 match this chunk. */
   hashVerified: boolean;
 }
-
-/** Structured verdict — no free-form text, just predefined outcomes. */
-export type ChunkVerdict = "pass" | "flag" | "reject";
-
+export type ChunkVerdict = "pass" | "flag" | "reject" | "skipped";
 export interface ChunkAssessment {
   verdict: ChunkVerdict;
   confidence: ProvenanceConfidence;
   reasons: AssessmentReason[];
 }
-
 export type AssessmentReason =
-  | "mid_word_boundary"
-  | "mid_sentence_boundary"
-  | "unbalanced_brackets"
-  | "incomplete_heading"
-  | "hash_mismatch"
-  | "empty_chunk"
-  | "overlapping_range"
-  | "clean";
-
+  | "mid_word_boundary" | "mid_sentence_boundary" | "unbalanced_brackets"
+  | "incomplete_heading" | "hash_mismatch" | "empty_chunk" | "overlapping_range"
+  | "validation_skipped" | "clean";
 export interface Chunk {
   id: string;
   index: number;
   text: string;
   source: SourceProvenance;
   validation: ChunkValidation;
-  /** Structured verdict with calibrated confidence. */
   assessment: ChunkAssessment;
 }
-
-export interface PipelineResult {
-  chunks: Chunk[];
-  stats: PipelineStats;
-}
-
+export interface PipelineResult { chunks: Chunk[]; stats: PipelineStats; }
 export interface PipelineStats {
   totalChunks: number;
   passed: number;
   flagged: number;
   rejected: number;
-  meanConfidence: number;
+  skipped: number;
+  /** Mean over assessed chunks only; null if there are none. */
+  meanConfidence: number | null;
   processingMs: number;
 }

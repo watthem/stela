@@ -4,7 +4,7 @@ export default defineConfig([
   {
     entry: { cli: "src/cli.ts" },
     format: ["esm"],
-    target: "node18",
+    target: "node22",
     platform: "node",
     outDir: "dist",
     clean: true,
@@ -13,9 +13,10 @@ export default defineConfig([
   {
     entry: { index: "src/index.ts" },
     format: ["esm"],
-    target: "node18",
+    target: "node22",
     platform: "node",
     outDir: "dist",
     dts: true,
   },
 ]);
+
