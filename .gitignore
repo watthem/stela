@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.tgz
 bench/fixture-*.md
+bench/data/
