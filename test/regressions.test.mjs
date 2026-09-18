@@ -89,6 +89,86 @@ test('headings inside backtick or tilde fences do not split the block', () => {
   assert.deepEqual(splitByHeading('# A\n\n````\n```\n# Still code\n````\n# B'), ['# A\n\n````\n```\n# Still code\n````', '# B']);
 });
 
+test('legal section headings split like ATX headings with correct metadata', () => {
+  const doc = [
+    'Preamble text.',
+    '',
+    'ARTICLE I DEFINITIONS',
+    'The following terms apply.',
+    '',
+    'Section 1.1 Defined Terms',
+    'Each term below has the stated meaning.',
+    '',
+    'Section 1.2 Interpretation',
+    'References to sections include subsections.',
+    '',
+    'ARTICLE II SERVICES',
+    'Provider shall deliver the services.',
+    '',
+    'Exhibit A Service Description',
+    'Details of the engagement.',
+    '',
+    'Schedule 1 Fee Table',
+    'Fees are listed below.',
+    '',
+    'RECITALS',
+    'The parties have agreed as follows.',
+    '',
+    'WHEREAS the Company desires to engage.',
+  ].join('\n');
+
+  const chunks = splitByHeading(doc);
+  assert.equal(chunks.length, 8);
+  assert.match(chunks[0], /^Preamble text/);
+  assert.match(chunks[1], /^ARTICLE I/);
+  assert.match(chunks[2], /^Section 1\.1/);
+  assert.match(chunks[3], /^Section 1\.2/);
+  assert.match(chunks[4], /^ARTICLE II/);
+  assert.match(chunks[5], /^Exhibit A/);
+  assert.match(chunks[6], /^Schedule 1/);
+  assert.match(chunks[7], /^RECITALS/);
+
+  const result = run(doc, { file: 'contract.txt', strategy: 'heading' });
+  verify(doc, result);
+  assert.equal(result.chunks.length, 8);
+
+  const art1 = result.chunks[1];
+  assert.equal(art1.source.heading, 'DEFINITIONS');
+  assert.equal(art1.source.headingLevel, 1);
+
+  const sec11 = result.chunks[2];
+  assert.equal(sec11.source.heading, 'Defined Terms');
+  assert.equal(sec11.source.headingLevel, 2);
+
+  const exhibit = result.chunks[5];
+  assert.equal(exhibit.source.heading, 'A Service Description');
+  assert.equal(exhibit.source.headingLevel, 1);
+
+  const schedule = result.chunks[6];
+  assert.equal(schedule.source.heading, '1 Fee Table');
+  assert.equal(schedule.source.headingLevel, 1);
+
+  const recitals = result.chunks[7];
+  assert.equal(recitals.source.headingLevel, 1);
+});
+
+test('legal headings inside fenced code blocks do not split', () => {
+  const doc = '# Overview\n\n```\nARTICLE I DEFINITIONS\nSection 1.1 Terms\n```\n\nAfter the fence.';
+  const chunks = splitByHeading(doc);
+  assert.equal(chunks.length, 1);
+  assert.match(chunks[0], /^# Overview/);
+  verify(doc, run(doc, { file: 'test.txt', strategy: 'heading' }));
+});
+
+test('roman numeral and mixed-case legal headings are recognized', () => {
+  const doc = 'Article III Governance\nBoard composition.\n\nArticle IV Officers\nOfficer duties.';
+  const chunks = splitByHeading(doc);
+  assert.equal(chunks.length, 2);
+  assert.match(chunks[0], /^Article III/);
+  assert.match(chunks[1], /^Article IV/);
+  verify(doc, run(doc, { file: 'test.txt', strategy: 'heading' }));
+});
+
 test('skipped quality has null scores and does not count as passed', () => {
   const result = run('The incomplete assertion (', { ...options, validate: false });
   const c = result.chunks[0];
