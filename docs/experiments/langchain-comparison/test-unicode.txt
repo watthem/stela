@@ -1,0 +1,13 @@
+# Spécification Téchnique
+
+## Résumé
+
+Le système doit traiter toutes les requêtes entrantes en moins de 500 millisecondes. L'échec de cette exigence doit être consigné et signalé à l'équipe des opérations.
+
+## Exigences de Performance
+
+Le système doit traiter toutes les requêtes entrantes en moins de 500 millisecondes. L'échec de cette exigence doit être consigné et signalé à l'équipe des opérations.
+
+## Sécurité
+
+Toutes les données doivent être chiffrées avec AES-256. Les listes de contrôle d'accès doivent être révisées trimestriellement.

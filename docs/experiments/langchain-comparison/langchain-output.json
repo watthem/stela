@@ -1,0 +1,191 @@
+{
+  "tool": "langchain",
+  "total_chunks": 15,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "# Terms of Service\n\nLast updated: January 15, 2026\n\n## 1. Acceptance of Terms",
+      "start_index": 0,
+      "length": 77,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        0
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 0
+    },
+    {
+      "index": 1,
+      "text": "By accessing or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Service. Your continued use of the Service constitutes acceptance of any modifications to these Terms.\n\n## 2. Description of Service",
+      "start_index": 79,
+      "length": 271,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        79
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 79
+    },
+    {
+      "index": 2,
+      "text": "The Service provides cloud-based data processing and analytics tools for enterprise customers. Features include real-time dashboards, automated reporting, and API access for integration with third-party systems.\n\n## 3. User Obligations",
+      "start_index": 352,
+      "length": 235,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        352
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 352
+    },
+    {
+      "index": 3,
+      "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.",
+      "start_index": 589,
+      "length": 227,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        589,
+        818,
+        3105
+      ],
+      "is_duplicate_text": true,
+      "find_returns_first": 589
+    },
+    {
+      "index": 4,
+      "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.\n\n## 4. Data Processing",
+      "start_index": 818,
+      "length": 250,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        818
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 818
+    },
+    {
+      "index": 5,
+      "text": "We process your data in accordance with our Privacy Policy. All data is encrypted in transit and at rest. We retain your data for the duration of your subscription plus 90 days, after which it is permanently deleted.\n\n## 5. Limitation of Liability",
+      "start_index": 1070,
+      "length": 247,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        1070
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 1070
+    },
+    {
+      "index": 6,
+      "text": "THE SERVICE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE SERVICE.\n\n## 6. Indemnification",
+      "start_index": 1319,
+      "length": 252,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        1319
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 1319
+    },
+    {
+      "index": 7,
+      "text": "You agree to indemnify and hold harmless the Company from any claims arising from your use of the Service. This includes but is not limited to claims resulting from your violation of these Terms, your violation of any applicable law, or your infringement of any third-party rights.",
+      "start_index": 1573,
+      "length": 281,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        1573
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 1573
+    },
+    {
+      "index": 8,
+      "text": "## 7. Governing Law\n\nThese Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any disputes arising under these Terms shall be resolved in the state or federal courts located in Wilmington, Delaware.",
+      "start_index": 1856,
+      "length": 292,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        1856
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 1856
+    },
+    {
+      "index": 9,
+      "text": "## 8. Modifications to Terms\n\nWe reserve the right to modify these Terms at any time. We will provide notice of material changes by posting the updated Terms on our website. Your continued use of the Service constitutes acceptance of any modifications to these Terms.\n\n## 9. Termination",
+      "start_index": 2150,
+      "length": 286,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        2150
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 2150
+    },
+    {
+      "index": 10,
+      "text": "We may terminate your access to the Service at any time, with or without cause. Upon termination, your right to use the Service ceases immediately. Provisions that by their nature should survive termination shall survive, including but not limited to ownership provisions, warranty disclaimers, and",
+      "start_index": 2438,
+      "length": 298,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        2438
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 2438
+    },
+    {
+      "index": 11,
+      "text": "limitations of liability.",
+      "start_index": 2737,
+      "length": 25,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        2737
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 2737
+    },
+    {
+      "index": 12,
+      "text": "## 10. Contact Information\n\nIf you have questions about these Terms, please contact us at legal@example.com.",
+      "start_index": 2764,
+      "length": 108,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        2764
+      ],
+      "is_duplicate_text": false,
+      "find_returns_first": 2764
+    },
+    {
+      "index": 13,
+      "text": "THE SERVICE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE SERVICE.",
+      "start_index": 2874,
+      "length": 229,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        1319,
+        2874
+      ],
+      "is_duplicate_text": true,
+      "find_returns_first": 1319
+    },
+    {
+      "index": 14,
+      "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.",
+      "start_index": 3105,
+      "length": 227,
+      "offset_correct": true,
+      "occurrences_in_source": [
+        589,
+        818,
+        3105
+      ],
+      "is_duplicate_text": true,
+      "find_returns_first": 589
+    }
+  ]
+}

@@ -1,0 +1,730 @@
+[
+  {
+    "id": "c6f8fb45-1811-4cf5-af82-9d4aa886bf93",
+    "index": 0,
+    "text": "# Terms of Service",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 0,
+      "byteEnd": 18,
+      "contentHash": "d8917aac63bb4dcd9036e535ad740d8699f256fd1ebd3f38a5cf49df6f67f998",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 0.94,
+        "boundaryScore": 1,
+        "completenessScore": 0.8,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "5264cb9f-cd1c-4ffc-b8a1-3535ada54371",
+    "index": 1,
+    "text": "Last updated: January 15, 2026",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 20,
+      "byteEnd": 50,
+      "contentHash": "bc183f4dd7e853c0e772a658b6ee3bb12b650a1d690ee4ddef53f89394556349",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": false,
+      "complete": true,
+      "warnings": [
+        "may end mid-word"
+      ]
+    },
+    "assessment": {
+      "verdict": "flag",
+      "confidence": {
+        "score": 0.7749999999999999,
+        "boundaryScore": 0.5499999999999999,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "mid_word_boundary",
+        "mid_sentence_boundary"
+      ]
+    }
+  },
+  {
+    "id": "398e29cc-4fe5-4020-b8bb-11cad246eb6d",
+    "index": 2,
+    "text": "## 1. Acceptance of Terms",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 52,
+      "byteEnd": 77,
+      "contentHash": "c9f46373bd5ef8f7638ce115e5bc3decc47b4ad2e9f4b8ffc2ca520758f99ab6",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "27d33232-5c40-4356-ac09-a3baf9e9dbbe",
+    "index": 3,
+    "text": "By accessing or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Service. Your continued use of the Service constitutes acceptance of any modifications to these Terms.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 79,
+      "byteEnd": 320,
+      "contentHash": "c1486e9c6f9abeef1e4f3edfef779dbb8a9b13619d52b220fd5edb8f35b371d9",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "78204216-d612-4f24-b516-beed5aad04ce",
+    "index": 4,
+    "text": "## 2. Description of Service",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 322,
+      "byteEnd": 350,
+      "contentHash": "c56eb9d03f0844fb5168e5ca239bb85fd07342a924b7cae111b37adf72a0672a",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "31b3b3b5-32f6-44cb-919f-5b2ed165141f",
+    "index": 5,
+    "text": "The Service provides cloud-based data processing and analytics tools for enterprise customers. Features include real-time dashboards, automated reporting, and API access for integration with third-party systems.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 352,
+      "byteEnd": 563,
+      "contentHash": "8047eb85f6582738ae737c18d9c0c685fac0595f332b6ab2d6c14cd264c71769",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "569282d8-35a8-40b4-962a-795f5502cd7a",
+    "index": 6,
+    "text": "## 3. User Obligations",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 565,
+      "byteEnd": 587,
+      "contentHash": "737e7966098708a3f7f0d40e2d372e9590a8144519a2f986881e68fe683ae288",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "7f2b8b34-e220-491f-adf5-e78cb102d767",
+    "index": 7,
+    "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 589,
+      "byteEnd": 816,
+      "contentHash": "4d41fc906711f6a20c1efa17f88412471bab456a4f5a813549b34435c30157aa",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "cd02669c-acb1-4297-92da-d5a065fb04ac",
+    "index": 8,
+    "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 818,
+      "byteEnd": 1045,
+      "contentHash": "4d41fc906711f6a20c1efa17f88412471bab456a4f5a813549b34435c30157aa",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "a99269d7-bff4-4561-9343-2bdb754dd353",
+    "index": 9,
+    "text": "## 4. Data Processing",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1047,
+      "byteEnd": 1068,
+      "contentHash": "172441031f109e292d155f6c03be5b08a8caeb7cf9afacad4c9d434f79a16010",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "59838c57-2c8a-4ad1-94f9-70ff8e9b1547",
+    "index": 10,
+    "text": "We process your data in accordance with our Privacy Policy. All data is encrypted in transit and at rest. We retain your data for the duration of your subscription plus 90 days, after which it is permanently deleted.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1070,
+      "byteEnd": 1286,
+      "contentHash": "2e748f7c98435ead49fedac76f0430abad3772c8954051aaec67b7ebf527f44b",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "b22088d5-88ba-49a9-83b6-e28519b5fa06",
+    "index": 11,
+    "text": "## 5. Limitation of Liability",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1288,
+      "byteEnd": 1317,
+      "contentHash": "aad81ca3d88268cef86fdeb38da6db7986a68e4b753615818bd373f801242256",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "1401d1d0-e8a9-4d41-a1d1-54587390b75e",
+    "index": 12,
+    "text": "THE SERVICE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE SERVICE.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1319,
+      "byteEnd": 1548,
+      "contentHash": "0f30aaef01324543b90ef018694b3d66267ce020eb8a1d4d47762271470c2ec3",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "4c17fdf7-3498-4cdb-9589-6b6da2965c16",
+    "index": 13,
+    "text": "## 6. Indemnification",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1550,
+      "byteEnd": 1571,
+      "contentHash": "04c475ea86cc2b7779292122571539d07894f1c8e99e0b297f6922cc59f4d07b",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "dccd345b-d66b-4149-85c5-7bbb7a1950a3",
+    "index": 14,
+    "text": "You agree to indemnify and hold harmless the Company from any claims arising from your use of the Service. This includes but is not limited to claims resulting from your violation of these Terms, your violation of any applicable law, or your infringement of any third-party rights.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1573,
+      "byteEnd": 1854,
+      "contentHash": "6fa9b8dda9553580491ab198d6e83c56975a8552d087803aa744a375fbb24baa",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "3e625dc3-661d-4e9d-8027-464e6208212a",
+    "index": 15,
+    "text": "## 7. Governing Law",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1856,
+      "byteEnd": 1875,
+      "contentHash": "5b26a406a629d82a4ea976f3f08a70290ebb9b6114d0270271966bd817ab8bef",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 0.94,
+        "boundaryScore": 1,
+        "completenessScore": 0.8,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "e2a8c9e9-5379-4eb3-9d5f-fb58904e87fc",
+    "index": 16,
+    "text": "These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any disputes arising under these Terms shall be resolved in the state or federal courts located in Wilmington, Delaware.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 1877,
+      "byteEnd": 2148,
+      "contentHash": "2ac814273a056262572317b5e69026571bf0fe969eaa0c5055aa89f0a8130abd",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "501f9a5f-0cb8-4f71-8021-ddd607cc7fb5",
+    "index": 17,
+    "text": "## 8. Modifications to Terms",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2150,
+      "byteEnd": 2178,
+      "contentHash": "bc98678b2585ac36f0b133ae375ee9d9e065111cc8bdd4610ec9b7e75fd8d2cd",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "83539078-623a-4376-828c-6de320e0f0c0",
+    "index": 18,
+    "text": "We reserve the right to modify these Terms at any time. We will provide notice of material changes by posting the updated Terms on our website. Your continued use of the Service constitutes acceptance of any modifications to these Terms.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2180,
+      "byteEnd": 2417,
+      "contentHash": "60402249a366df78c174b78d729201eeda7ba310cbe70bf7012d6539208b0cb5",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "8e30214e-7f5b-4a17-b1d0-cbdb2a21a27c",
+    "index": 19,
+    "text": "## 9. Termination",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2419,
+      "byteEnd": 2436,
+      "contentHash": "649da2c87198e47d3849567d7370aceb1389445afc27bb495149d199103e8240",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 0.94,
+        "boundaryScore": 1,
+        "completenessScore": 0.8,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "5fcbf093-fef6-4d18-b94d-3f64e973bef0",
+    "index": 20,
+    "text": "We may terminate your access to the Service at any time, with or without cause. Upon termination, your right to use the Service ceases immediately. Provisions that by their nature should survive termination shall survive, including but not limited to ownership provisions, warranty disclaimers, and limitations of liability.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2438,
+      "byteEnd": 2762,
+      "contentHash": "43f47dd71f5a2afab152fe1d8d6a00f73379f9a751d975631173ff1f15c123b0",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "16787798-6007-4dd9-af6a-f75f656ca06d",
+    "index": 21,
+    "text": "## 10. Contact Information",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2764,
+      "byteEnd": 2790,
+      "contentHash": "15a5f6b8b1d7814a46db018c31cf6c5bf7b2e759585e6e7752d233f3af0669ff",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "e7653681-27c5-4f43-90de-079f68f7ee45",
+    "index": 22,
+    "text": "If you have questions about these Terms, please contact us at legal@example.com.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2792,
+      "byteEnd": 2872,
+      "contentHash": "058cbb591c23483381bc594ae2b0f3b0733c0ba943879b6c38c9bcbda41b9ea7",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "6221b1cb-aa1e-44ce-8fb9-0b4af67a74d9",
+    "index": 23,
+    "text": "THE SERVICE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE SERVICE.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 2874,
+      "byteEnd": 3103,
+      "contentHash": "0f30aaef01324543b90ef018694b3d66267ce020eb8a1d4d47762271470c2ec3",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "5a3e37d7-9d06-4b39-a8d2-6eb6e5024366",
+    "index": 24,
+    "text": "You agree to provide accurate information when creating your account. You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately of any unauthorized access to your account.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-document.txt",
+      "byteStart": 3105,
+      "byteEnd": 3332,
+      "contentHash": "4d41fc906711f6a20c1efa17f88412471bab456a4f5a813549b34435c30157aa",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  }
+]

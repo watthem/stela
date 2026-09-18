@@ -1,0 +1,205 @@
+[
+  {
+    "id": "dfc1366e-419d-4202-a5fa-510a02eb74a6",
+    "index": 0,
+    "text": "# Spécification Téchnique",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 0,
+      "byteEnd": 27,
+      "contentHash": "a0454619f8a8bcbe773e4041732b1e49816f92abd8a6275ba0e7a1cb28115050",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "83f2cf32-ed8b-433a-9903-2abf5e393534",
+    "index": 1,
+    "text": "## Résumé",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 29,
+      "byteEnd": 40,
+      "contentHash": "e11bf8b82863a5b358b5aab5a60aa85b1801725df6f4ece12c0b6094ba4f626b",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 0.94,
+        "boundaryScore": 1,
+        "completenessScore": 0.8,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "89692d7f-37c2-417a-8712-1d2ae977cfaf",
+    "index": 2,
+    "text": "Le système doit traiter toutes les requêtes entrantes en moins de 500 millisecondes. L'échec de cette exigence doit être consigné et signalé à l'équipe des opérations.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 42,
+      "byteEnd": 218,
+      "contentHash": "54a5f0678a115ea722b1bd7945bc51fe09f706c9a218c8db27a728c26e62e594",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "a58e7878-b417-4fac-8031-438dfbc0af4e",
+    "index": 3,
+    "text": "## Exigences de Performance",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 220,
+      "byteEnd": 247,
+      "contentHash": "8b5a08a9971a4756329c96e6b375d497191c650dd2def26d9c0cded0f8349b3b",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "84be456b-c610-4fde-bd09-14ecd0ad05a2",
+    "index": 4,
+    "text": "Le système doit traiter toutes les requêtes entrantes en moins de 500 millisecondes. L'échec de cette exigence doit être consigné et signalé à l'équipe des opérations.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 249,
+      "byteEnd": 425,
+      "contentHash": "54a5f0678a115ea722b1bd7945bc51fe09f706c9a218c8db27a728c26e62e594",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "e5fe060e-9ed3-4aa1-b6e5-3efe9908a6d0",
+    "index": 5,
+    "text": "## Sécurité",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 427,
+      "byteEnd": 440,
+      "contentHash": "04f3d3d8cf9a4a058c60c48d8c8b87273150fd47161d4a65c09a6e9fc93b37c9",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 0.94,
+        "boundaryScore": 1,
+        "completenessScore": 0.8,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  },
+  {
+    "id": "11b3483d-a6f3-4b51-9dfe-4ac1d6e3670a",
+    "index": 6,
+    "text": "Toutes les données doivent être chiffrées avec AES-256. Les listes de contrôle d'accès doivent être révisées trimestriellement.",
+    "source": {
+      "file": "docs/experiments/langchain-comparison/test-unicode.txt",
+      "byteStart": 442,
+      "byteEnd": 577,
+      "contentHash": "90700a32de7b3135d348385f501243a0210146d4f1be7d6451a40f585daf9acc",
+      "strategy": "paragraph"
+    },
+    "validation": {
+      "boundaryClean": true,
+      "complete": true,
+      "warnings": []
+    },
+    "assessment": {
+      "verdict": "pass",
+      "confidence": {
+        "score": 1,
+        "boundaryScore": 1,
+        "completenessScore": 1,
+        "hashVerified": true
+      },
+      "reasons": [
+        "clean"
+      ]
+    }
+  }
+]
