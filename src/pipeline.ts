@@ -59,9 +59,26 @@ export function run(input: string | Buffer, options: PipelineOptions): PipelineR
       case "reject": rejected++; break;
       case "skipped": skipped++; break;
     }
+    let heading: string | undefined;
+    let headingLevel: number | undefined;
+    if (options.strategy === "heading") {
+      const atx = /^ {0,3}(#{1,6})(?:[ \t]+(.*))?$/.exec(text.split(/\r\n|\n|\r/)[0]);
+      if (atx) {
+        headingLevel = atx[1].length;
+        heading = (atx[2] ?? "").replace(/\s+#+\s*$/, "").trim() || undefined;
+      } else {
+        const legal = /^ {0,3}(?:(article)\s+(?:[ivx]+|\d+)(?:\s+(.*))?|(section)\s+(\d+(?:\.\d+)*)(?:\s+(.*))?|(exhibit|schedule)\s+([a-z0-9].*)|(recitals|preamble|whereas))\s*$/im.exec(text.split(/\r\n|\n|\r/)[0]);
+        if (legal) {
+          if (legal[1]) { headingLevel = 1; heading = (legal[2] ?? "").replace(/\.\s*$/, "").trim() || undefined; }
+          else if (legal[3]) { headingLevel = 2; heading = (legal[5] ?? "").replace(/\.\s*$/, "").trim() || undefined; }
+          else if (legal[6]) { headingLevel = 1; heading = (legal[7] ?? "").trim() || undefined; }
+          else if (legal[8]) { headingLevel = 1; heading = legal[8].trim(); }
+        }
+      }
+    }
     chunks.push({
       id: randomUUID(), index, text,
-      source: { file: options.file, byteStart, byteEnd, contentHash: hash, strategy: options.strategy },
+      source: { file: options.file, byteStart, byteEnd, contentHash: hash, strategy: options.strategy, heading, headingLevel },
       validation, assessment,
     });
   }

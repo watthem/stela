@@ -29,7 +29,9 @@ export function split(text: string, strategy: Strategy, maxWords?: number): stri
   return splitWithOffsets(text, strategy, maxWords).map(s => s.text);
 }
 
-/** ATX headings outside backtick/tilde fences; source positions are retained. */
+const legalHeading = /^ {0,3}(?:(?:article|section)\s+(?:[ivx]+|\d+(?:\.\d+)*)\b|(?:exhibit|schedule)\s+[a-z0-9]|(?:recitals|preamble|whereas)\s*$)/i;
+
+/** ATX headings and legal section headings outside backtick/tilde fences; source positions are retained. */
 export function splitByHeadingWithOffsets(source: string): ChunkSpan[] {
   const results: ChunkSpan[] = [];
   const positions: number[] = [];
@@ -46,7 +48,7 @@ export function splitByHeadingWithOffsets(source: string): ChunkSpan[] {
       fence = { marker: marker[1][0], length: marker[1].length };
       continue;
     }
-    if (/^ {0,3}#{1,6}(?:[ \t]+|$)/.test(line)) positions.push(match.index!);
+    if (/^ {0,3}#{1,6}(?:[ \t]+|$)/.test(line) || legalHeading.test(line)) positions.push(match.index!);
   }
   if (positions.length === 0) addTrimmedSegment(source, 0, source.length, results);
   else {
