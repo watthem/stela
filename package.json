@@ -30,8 +30,8 @@
     "preprocessing",
     "llm"
   ],
-  "author": "Chunky River Computer Co.",
-  "license": "UNLICENSED",
+  "author": "Matthew Hendricks",
+  "license": "MIT",
   "private": false,
   "devDependencies": {
     "@types/node": "^22.20.3",

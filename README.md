@@ -102,4 +102,4 @@ Tests include independent source-Buffer slice/hash checks, a seeded Unicode corp
 
 ## License
 
-Proprietary. Free to use. See the package's `UNLICENSED` designation.
+MIT. See [LICENSE](LICENSE).

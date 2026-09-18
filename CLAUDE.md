@@ -8,7 +8,7 @@ Document preprocessing CLI with byte-range provenance. `@watthem/stela` on npm.
 - `docs/` — public documentation, experiments, and blog posts.
 - `docs/spec.md` — living spec. Update it when the implementation changes.
 - `docs/experiments/` — reproducible benchmarks. Each has its own README.
-- Zero runtime dependencies. Node.js >= 22. All 15 tests must pass before merging.
+- Zero runtime dependencies. Node.js >= 22. MIT licensed. All 18 tests must pass before merging.
 
 ## Self-verification rule
 
