@@ -40,7 +40,7 @@ This is the core guarantee. Everything else is secondary.
 | Strategy | How it splits | Notes |
 |---|---|---|
 | `paragraph` | Blank-line boundaries | LF, CRLF, CR, whitespace-only lines |
-| `heading` | ATX `#` headings outside fenced code blocks | Not a full Markdown parser. No Setext support. |
+| `heading` | ATX `#` headings and legal section headings outside fenced code blocks | Matches ARTICLE, Section, Exhibit, Schedule, RECITALS, PREAMBLE, WHEREAS. Not a full Markdown parser. No Setext support. |
 | `sentence` | `Intl.Segmenter` (English) | Retains common abbreviations. CJK punctuation handled. Boundaries vary by Node/ICU version. |
 | `word` | Whitespace-delimited word count | Not model tokens. `--max-words` controls chunk size. |
 

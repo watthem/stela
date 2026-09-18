@@ -67,6 +67,15 @@ for (const chunk of result.chunks) {
 
 For exact disk-file provenance, pass `readFileSync(path)` as a Buffer instead of decoding it yourself. `splitByHeading`, `splitByParagraph`, `splitBySentence`, and `splitByWord` return text-only arrays. They do not perform provenance verification; use `run` for verified chunks.
 
+## Documentation
+
+- [How stela works](docs/how-it-works.md)
+- [The provenance contract](docs/provenance-contract.md)
+- [CLI reference](docs/cli-reference.md)
+- [Library API](docs/library-api.md)
+- [When to use stela instead of another tool](docs/why-stela.md)
+- [LangChain integration](docs/integrations/langchain.md)
+
 ## Quality assessments and migration
 
 Quality scores are heuristics, **not calibrated probabilities**. They examine punctuation, bracket type/order, and simple text characteristics; they cannot establish factual accuracy or semantic completeness. `pass`, `flag`, and `reject` are quality classifications. All emitted chunks have independently verified byte provenance.
