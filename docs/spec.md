@@ -10,7 +10,7 @@ Living reference for what stela is, how it works, and what it guarantees. Update
 - **License:** MIT
 - **Runtime:** Node.js >= 22
 - **Language:** TypeScript, zero runtime dependencies
-- **Current version:** 0.2.0
+- **Current version:** 0.2.1
 
 ## What it does
 

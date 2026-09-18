@@ -1,7 +1,7 @@
 {
   "name": "@watthem/stela",
-  "version": "0.2.0",
-  "description": "Git blame for AI answers \u2014 document preprocessing with provenance tracking",
+  "version": "0.2.1",
+  "description": "Git blame for AI answers — document preprocessing with provenance tracking",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
