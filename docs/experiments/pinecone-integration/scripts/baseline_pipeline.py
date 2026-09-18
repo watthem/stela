@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+"""
+Baseline pipeline: standard chunking without provenance.
+
+Uses LangChain RecursiveCharacterTextSplitter + sentence-transformers
+embeddings + FAISS local vector store.
+
+Measures:
+  - Locator verification rate (start_index slicing match)
+  - Stale detection (always 0% by construction)
+  - Retrieval overlap with CUAD ground-truth spans
+
+Usage:
+    python scripts/baseline_pipeline.py
+"""
+
+import json
+import os
+import sys
+import time
+import hashlib
+import numpy as np
+
+# Ensure we can import from the venv
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+EXPERIMENT_DIR = os.path.dirname(SCRIPT_DIR)
+VENV_SITE = os.path.join(EXPERIMENT_DIR, ".venv", "lib")
+# Find the python version directory
+for d in os.listdir(VENV_SITE) if os.path.isdir(VENV_SITE) else []:
+    sp = os.path.join(VENV_SITE, d, "site-packages")
+    if os.path.isdir(sp) and sp not in sys.path:
+        sys.path.insert(0, sp)
+
+import torch
+# Force CPU — the local GPU (GTX 1060) has a CUDA CC too old for this PyTorch build
+torch.cuda.is_available = lambda: False
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from sentence_transformers import SentenceTransformer
+import faiss
+
+
+def load_contracts(contracts_dir):
+    """Load all contract text files."""
+    contracts = {}
+    for fname in sorted(os.listdir(contracts_dir)):
+        if not fname.endswith(".txt"):
+            continue
+        path = os.path.join(contracts_dir, fname)
+        with open(path, "r", encoding="utf-8") as f:
+            contracts[fname] = f.read()
+    return contracts
+
+
+def load_annotations(annotations_path):
+    """Load CUAD annotations."""
+    with open(annotations_path) as f:
+        return json.load(f)
+
+
+def chunk_document(text, chunk_size=500, chunk_overlap=50):
+    """Chunk with LangChain RecursiveCharacterTextSplitter."""
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        add_start_index=True,
+        length_function=len,
+    )
+    docs = splitter.create_documents([text])
+    chunks = []
+    for i, doc in enumerate(docs):
+        chunks.append({
+            "chunk_index": i,
+            "text": doc.page_content,
+            "start_index": doc.metadata.get("start_index", -1),
+        })
+    return chunks
+
+
+def verify_locator(source_text, chunk):
+    """Verify that slicing source at start_index for len(chunk_text) matches."""
+    start = chunk["start_index"]
+    length = len(chunk["text"])
+    if start < 0 or start + length > len(source_text):
+        return False
+    sliced = source_text[start : start + length]
+    return sliced == chunk["text"]
+
+
+def compute_retrieval_overlap(retrieved_chunks, annotation_answers, source_text):
+    """
+    Compute overlap between retrieved chunks and ground-truth annotation spans.
+    Returns fraction of annotation span characters covered by any retrieved chunk.
+    """
+    if not annotation_answers:
+        return None
+
+    # Build set of character positions covered by annotations
+    gt_positions = set()
+    for ans in annotation_answers:
+        start = ans["answer_start"]
+        end = start + len(ans["text"])
+        gt_positions.update(range(start, end))
+
+    if not gt_positions:
+        return None
+
+    # Build set of character positions covered by retrieved chunks
+    retrieved_positions = set()
+    for chunk in retrieved_chunks:
+        start = chunk["start_index"]
+        if start < 0:
+            continue
+        end = start + len(chunk["text"])
+        retrieved_positions.update(range(start, end))
+
+    overlap = gt_positions & retrieved_positions
+    return len(overlap) / len(gt_positions) if gt_positions else 0.0
+
+
+def check_stale_detection_baseline(original_chunks, mutated_text, original_text):
+    """
+    Baseline stale detection.
+
+    In a real pipeline the vector store holds (document_id, chunk_index,
+    start_index, embedding).  The full chunk text lives only inside the
+    embedding; there is no per-chunk content hash.  The system therefore has
+    NO mechanism to detect per-chunk staleness without re-chunking the
+    entire document and diffing — which is a full re-index, not a detection
+    mechanism.
+
+    We model this by having the baseline always report "not stale."
+    Ground truth is determined by comparing text at the stored character
+    offset between the original and mutated documents.
+    """
+    results = {"true_positive": 0, "false_negative": 0, "true_negative": 0, "false_positive": 0}
+
+    for chunk in original_chunks:
+        start = chunk["start_index"]
+        length = len(chunk["text"])
+
+        # Baseline never detects stale (no hash, no mechanism)
+        detected_stale = False
+
+        # Ground truth: is the chunk actually stale?
+        actually_stale = True
+        if start >= 0 and start + length <= len(mutated_text):
+            if mutated_text[start : start + length] == chunk["text"]:
+                actually_stale = False
+
+        if actually_stale and detected_stale:
+            results["true_positive"] += 1
+        elif actually_stale and not detected_stale:
+            results["false_negative"] += 1
+        elif not actually_stale and detected_stale:
+            results["false_positive"] += 1
+        else:
+            results["true_negative"] += 1
+
+    return results
+
+
+def main():
+    contracts_dir = os.path.join(EXPERIMENT_DIR, "data", "contracts")
+    mutated_dir = os.path.join(EXPERIMENT_DIR, "data", "mutated")
+    annotations_path = os.path.join(EXPERIMENT_DIR, "data", "annotations.json")
+    results_dir = os.path.join(EXPERIMENT_DIR, "results")
+    os.makedirs(results_dir, exist_ok=True)
+
+    print("Loading contracts...")
+    contracts = load_contracts(contracts_dir)
+    annotations = load_annotations(annotations_path)
+
+    print("Loading embedding model (sentence-transformers/all-MiniLM-L6-v2)...")
+    model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+    all_results = {}
+    total_locator_pass = 0
+    total_locator_total = 0
+    total_retrieval_overlaps = []
+    total_stale = {"true_positive": 0, "false_negative": 0, "true_negative": 0, "false_positive": 0}
+
+    mutation_types = ["crlf", "typo", "inserted", "smartquote", "whitespace"]
+
+    for doc_name, text in contracts.items():
+        print(f"\n--- {doc_name} ({len(text)} chars) ---")
+
+        # 1. Chunk
+        chunks = chunk_document(text)
+        print(f"  {len(chunks)} chunks")
+
+        # 2. Embed
+        chunk_texts = [c["text"] for c in chunks]
+        embeddings = model.encode(chunk_texts, show_progress_bar=False, convert_to_numpy=True)
+
+        # 3. Build FAISS index
+        dim = embeddings.shape[1]
+        index = faiss.IndexFlatIP(dim)
+        # Normalize for cosine similarity
+        faiss.normalize_L2(embeddings)
+        index.add(embeddings)
+
+        # 4. Locator verification
+        locator_pass = sum(1 for c in chunks if verify_locator(text, c))
+        locator_rate = locator_pass / len(chunks) if chunks else 0
+        total_locator_pass += locator_pass
+        total_locator_total += len(chunks)
+        print(f"  Locator verification: {locator_pass}/{len(chunks)} = {locator_rate:.1%}")
+
+        # 5. Retrieval overlap with CUAD annotations
+        doc_annotations = annotations.get(doc_name, [])
+        doc_retrieval_overlaps = []
+
+        for qa in doc_annotations:
+            if not qa.get("answers"):
+                continue
+            # Use the question as query
+            query = qa["question"]
+            query_emb = model.encode([query], convert_to_numpy=True)
+            faiss.normalize_L2(query_emb)
+            scores, indices = index.search(query_emb, 5)
+
+            retrieved = [chunks[i] for i in indices[0] if i < len(chunks)]
+            overlap = compute_retrieval_overlap(retrieved, qa["answers"], text)
+            if overlap is not None:
+                doc_retrieval_overlaps.append(overlap)
+                total_retrieval_overlaps.append(overlap)
+
+        avg_overlap = np.mean(doc_retrieval_overlaps) if doc_retrieval_overlaps else 0
+        print(f"  Retrieval overlap (avg over {len(doc_retrieval_overlaps)} queries): {avg_overlap:.1%}")
+
+        # 6. Stale detection against mutations
+        doc_stale = {"true_positive": 0, "false_negative": 0, "true_negative": 0, "false_positive": 0}
+        base = doc_name.rsplit(".", 1)[0]
+
+        for mut_type in mutation_types:
+            mut_filename = f"{base}_{mut_type}.txt"
+            mut_path = os.path.join(mutated_dir, mut_filename)
+            if not os.path.exists(mut_path):
+                continue
+            with open(mut_path, "r", encoding="utf-8") as f:
+                mutated_text = f.read()
+
+            stale_result = check_stale_detection_baseline(chunks, mutated_text, text)
+            for k in doc_stale:
+                doc_stale[k] += stale_result[k]
+                total_stale[k] += stale_result[k]
+
+        tp = doc_stale["true_positive"]
+        fn = doc_stale["false_negative"]
+        fp = doc_stale["false_positive"]
+        tn = doc_stale["true_negative"]
+        tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
+        fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
+        print(f"  Stale detection: TPR={tpr:.1%} FPR={fpr:.1%} (TP={tp} FN={fn} FP={fp} TN={tn})")
+
+        all_results[doc_name] = {
+            "num_chunks": len(chunks),
+            "locator_pass": locator_pass,
+            "locator_rate": locator_rate,
+            "retrieval_overlap_avg": avg_overlap,
+            "retrieval_queries": len(doc_retrieval_overlaps),
+            "stale_detection": doc_stale,
+        }
+
+    # Aggregate results
+    overall_locator_rate = total_locator_pass / total_locator_total if total_locator_total else 0
+    overall_retrieval_overlap = np.mean(total_retrieval_overlaps) if total_retrieval_overlaps else 0
+
+    tp = total_stale["true_positive"]
+    fn = total_stale["false_negative"]
+    fp = total_stale["false_positive"]
+    tn = total_stale["true_negative"]
+    overall_tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
+    overall_fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
+
+    summary = {
+        "pipeline": "baseline",
+        "chunking": "RecursiveCharacterTextSplitter(500, 50)",
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "vector_store": "FAISS (local)",
+        "total_documents": len(contracts),
+        "total_chunks": total_locator_total,
+        "locator_verification_rate": overall_locator_rate,
+        "stale_detection_tpr": overall_tpr,
+        "stale_detection_fpr": overall_fpr,
+        "stale_detection_counts": total_stale,
+        "retrieval_overlap_avg": overall_retrieval_overlap,
+        "retrieval_queries_total": len(total_retrieval_overlaps),
+        "per_document": all_results,
+    }
+
+    output_path = os.path.join(results_dir, "baseline_results.json")
+    with open(output_path, "w") as f:
+        json.dump(summary, f, indent=2)
+
+    print("\n" + "=" * 60)
+    print("BASELINE PIPELINE SUMMARY")
+    print("=" * 60)
+    print(f"Documents:                  {len(contracts)}")
+    print(f"Total chunks:               {total_locator_total}")
+    print(f"Locator verification rate:  {overall_locator_rate:.1%}")
+    print(f"Stale detection TPR:        {overall_tpr:.1%}")
+    print(f"Stale detection FPR:        {overall_fpr:.1%}")
+    print(f"Retrieval overlap (avg):    {overall_retrieval_overlap:.1%}")
+    print(f"\nResults saved to: {output_path}")
+
+
+if __name__ == "__main__":
+    main()
