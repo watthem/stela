@@ -68,15 +68,9 @@ Comparison page. Not attack-y, just factual:
 - **vs. Unstructured:** Unstructured is a document extraction pipeline. stela is a post-extraction chunker. They're complementary.
 - **vs. building it yourself:** You'll need to handle UTF-8 byte mapping, surrogate pairs, CRLF normalization edge cases, and verification. stela does this in ~500 lines with tests.
 
-### 7. Integration guides (future)
+### 7. Integration guides
 
-Short recipes for common setups:
-- stela + LangChain
-- stela + LlamaIndex
-- stela + Pinecone/Weaviate/Qdrant
-- stela in a CI pipeline (chunk, verify, store provenance alongside embeddings)
-
-Hold these until there's user demand or a blog post to anchor them to.
+See `integrations-spec.md` — each guide requires a working example with real evidence before it gets written. No guide without a proven experiment behind it.
 
 ## What to avoid
 
