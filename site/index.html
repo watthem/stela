@@ -564,25 +564,26 @@
             <h2>Your chunk offsets are wrong.</h2>
             <p>
               Most chunking libraries give you a <span class="highlight">start_index</span>
-              that says where a chunk came from. That number is often a character offset,
-              not a byte offset. For any document with accented characters, CJK text, or emoji,
-              the two diverge. The error accumulates through the document, and nothing tells
-              you when it's wrong.
+              that says where a chunk came from. That number is a character offset,
+              not a byte offset. It's valid for slicing the in-memory string, but if your
+              pipeline stores it and later uses it to slice the file bytes, accented
+              characters, CJK text, or emoji cause the two to diverge. The gap accumulates
+              through the document.
             </p>
             <p>
-              Store that offset in a vector database and try to highlight the source passage
-              later. You're highlighting the wrong text.
+              Store that character offset in a vector database, treat it as a file position
+              later, and you're highlighting the wrong text.
             </p>
           </div>
 
           <div class="problem-grid">
             <div class="problem-cell">
-              <h3>Silent offset drift</h3>
-              <p>LangChain's start_index drifts by 24 bytes on a French document with accented characters. No error, no warning. The offset just quietly points somewhere else.</p>
+              <h3>Character vs byte mismatch</h3>
+              <p>LangChain's start_index is a valid character offset, but if you treat it as a byte position, it's off by 24 bytes on a French document with accented characters. No error, no warning.</p>
             </div>
             <div class="problem-cell">
               <h3>No verification</h3>
-              <p>Offsets are found after splitting using string search. Duplicate text, token splitters, and multi-byte characters each break this in documented ways.</p>
+              <p>Offsets are found after splitting using string search. Token splitters have documented failure cases, and there is no per-chunk hash to catch mismatches at query time.</p>
             </div>
             <div class="problem-cell">
               <h3>No stale detection</h3>
@@ -626,7 +627,7 @@
             <div class="demo-before">
               <p class="demo-label">Document goes in</p>
               <div class="demo-doc">
-                <span class="doc-title">contract.txt (UTF-8, 4,218 bytes)</span>
+                <span class="doc-title">contract.txt (UTF-8, 241 bytes)</span>
                 ARTICLE I DEFINITIONS<br><br>
                 Section 1.1 Defined Terms. The following terms shall
                 have the meanings set forth herein when used in this
@@ -642,14 +643,14 @@
               <p class="demo-label">Chunks come out with provenance</p>
               <div class="demo-chunks-stack">
                 <div class="demo-chunk">
-                  <div class="chunk-text">ARTICLE I DEFINITIONS<br><br>Section 1.1 Defined Terms. The following terms shall have the meanings set forth herein...</div>
+                  <div class="chunk-text">Section 1.1 Defined Terms. The following terms shall have the meanings set forth herein...</div>
                   <dl class="demo-meta">
                     <dt>Bytes</dt>
-                    <dd>[0, 247)</dd>
+                    <dd>[23, 141)</dd>
                     <dt>Hash</dt>
-                    <dd>a3f8c2e7...</dd>
+                    <dd>fdb5494b...</dd>
                     <dt>Heading</dt>
-                    <dd>L1: DEFINITIONS</dd>
+                    <dd>L2: Defined Terms</dd>
                     <dt>Verdict</dt>
                     <dd><span class="verdict-badge verdict-pass">pass</span></dd>
                   </dl>
@@ -658,9 +659,9 @@
                   <div class="chunk-text">Section 1.2 Interpretation. References to Articles and Sections include all subsections thereof...</div>
                   <dl class="demo-meta">
                     <dt>Bytes</dt>
-                    <dd>[249, 425)</dd>
+                    <dd>[143, 241)</dd>
                     <dt>Hash</dt>
-                    <dd>b7d1e4f0...</dd>
+                    <dd>54923343...</dd>
                     <dt>Heading</dt>
                     <dd>L2: Interpretation</dd>
                     <dt>Verdict</dt>

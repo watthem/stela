@@ -37,7 +37,7 @@ This lets the next agent (or the same agent in a new session) pick up without re
 
 ## Code
 
-- All 15 tests must pass before committing changes to `src/`.
+- All 18 tests must pass before committing changes to `src/`.
 - Zero runtime dependencies is a hard constraint.
 - Node.js >= 22.
 - Don't normalize line endings or Unicode in chunks. Chunks are verbatim slices.

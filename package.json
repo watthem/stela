@@ -21,18 +21,34 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs",
+    "prepack": "npm test"
   },
   "keywords": [
     "rag",
     "chunking",
     "provenance",
     "preprocessing",
-    "llm"
+    "llm",
+    "compliance",
+    "audit",
+    "source-provenance",
+    "citations"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/watthem/stela.git"
+  },
+  "homepage": "https://github.com/watthem/stela",
+  "bugs": {
+    "url": "https://github.com/watthem/stela/issues"
+  },
   "author": "Matthew Hendricks",
   "license": "MIT",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^22.20.3",
     "tsup": "^8.5.1",

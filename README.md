@@ -38,7 +38,7 @@ stela <UTF-8-text-file> [options]
 `word` counts whitespace-delimited words. It does **not** enforce an LLM/embedding token budget; one unbroken identifier can be arbitrarily long. Use your model's tokenizer to impose such a budget. Legacy `token`, `--max-tokens`, `maxTokens`, and `splitByToken` remain deprecated word-count aliases; the CLI warns when they are used. Prefer `word`, `--max-words`, `maxWords`, and `splitByWord`.
 
 - Paragraph splitting recognizes LF, CRLF, CR, and space/tab-only blank lines.
-- Heading splitting recognizes ATX (`#`) headings outside backtick and tilde fences. It is not a full Markdown parser: Setext headings and container-specific list/blockquote nesting are not supported.
+- Heading splitting recognizes ATX (`#`) headings and legal section headings (ARTICLE, Section, Exhibit, Schedule, RECITALS, PREAMBLE, WHEREAS) outside backtick and tilde fences. It is not a full Markdown parser: Setext headings and container-specific list/blockquote nesting are not supported.
 - Sentence splitting uses the runtime's English `Intl.Segmenter`, with common title abbreviations retained. It handles closing quotes and CJK sentence punctuation, but language/domain-specific abbreviations can still be ambiguous. Exact sentence boundaries can vary with the Node/ICU version; pin the runtime for reproducibility.
 
 ## Library
