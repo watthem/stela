@@ -4,6 +4,8 @@ Many chunking libraries give you a `start_index` without defining it as a file-b
 
 [stela](https://www.npmjs.com/package/@watthem/stela) is a TypeScript CLI that tracks byte offsets during the split, then verifies them with the source bytes and a SHA-256 hash.
 
+![Character position is not a file-byte position](../assets/illustrations/coordinate-systems.svg)
+
 ## The offset drift problem
 
 LangChain's `RecursiveCharacterTextSplitter` has an `add_start_index` option. It splits the text, then searches for each chunk's position using `text.find()`. The number you get back is a Python character offset.

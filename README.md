@@ -2,6 +2,8 @@
 
 Git blame for AI answers. Chunk UTF-8 text with exact source-byte ranges and SHA-256 hashes.
 
+![Every chunk points back to exact bytes](docs/assets/illustrations/chunk-map.svg)
+
 ## Quick start
 
 Requires Node.js 22 or later.

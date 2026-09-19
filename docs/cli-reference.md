@@ -41,6 +41,8 @@ npx @watthem/stela example.md
 
 Use `--json` for one pretty-printed JSON array. Both formats contain the same chunk objects.
 
+![Strategy comparison](assets/illustrations/strategy-comparison.svg)
+
 ## Strategies
 
 ### `paragraph`

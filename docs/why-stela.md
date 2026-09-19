@@ -2,6 +2,8 @@
 
 stela is narrow: it chunks UTF-8 text and verifies the byte origin of every chunk. It is usually a complement to loaders, token-aware chunkers, embedding models, and vector stores rather than a replacement for them.
 
+![Character vs byte coordinate systems](assets/illustrations/coordinate-systems.svg)
+
 ## LangChain text splitters
 
 LangChain offers more splitter types and configuration options. Its `add_start_index` metadata is a character position found after splitting. That works for many sequential documents, but character indices are not UTF-8 byte offsets, and token-based splitters have documented cases where the lookup returns `-1`.

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">A character position is not a file-byte position.</title>
+  <desc id="description">A verified French fixture shows character index 236 maps to UTF-8 byte 249, while stela tracks and verifies byte range 249 to 425.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F5A623"/>
+    </marker>
+    <style>
+      .bg { fill: #0a0a0a; }
+      .box { fill: #111111; stroke: #2c2b28; stroke-width: 1.5; }
+      .raised { fill: #181817; stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-box { fill: #251b0d; stroke: #F5A623; stroke-width: 2; }
+      .green-box { fill: #122014; stroke: #5CB85C; stroke-width: 2; }
+      .red-box { fill: #241313; stroke: #E06060; stroke-width: 2; }
+      .title { fill: #e8e6e1; font: 600 36px 'Space Grotesk', Inter, Arial, sans-serif; letter-spacing: -0.7px; }
+      .kicker { fill: #F5A623; font: 600 12px 'Space Mono', ui-monospace, monospace; letter-spacing: 1.8px; }
+      .label { fill: #e8e6e1; font: 600 17px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .body { fill: #e8e6e1; font: 400 15px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .small { fill: #8a8880; font: 400 12px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .mono { fill: #e8e6e1; font: 400 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-dim { fill: #8a8880; font: 400 12px 'Space Mono', ui-monospace, monospace; }
+      .mono-amber { fill: #F5A623; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-green { fill: #5CB85C; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-red { fill: #E06060; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .line { stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-line { stroke: #F5A623; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8a8880; stroke-width: 1.5; stroke-dasharray: 5 6; fill: none; }
+      .watermark { fill: #8a8880; font: 500 11px 'Space Mono', ui-monospace, monospace; letter-spacing: 1px; }
+    </style>
+  </defs>
+  <rect width="1200" height="675" class="bg"/>
+  <text x="50" y="45" class="kicker" text-anchor="start">02 / COORDINATE SYSTEMS</text>
+  <text x="50" y="88" class="title" text-anchor="start">A character position is not a file-byte position.</text>
+  <text x="1150" y="48" class="watermark" text-anchor="end">STELA / PROVENANCE</text>
+  <line x1="50" y1="108" x2="1150" y2="108" class="line"/>
+  
+    <rect x="50" y="140" width="526" height="452" rx="6" class="box"/>
+    <text x="78" y="177" class="kicker" text-anchor="start">POSITION FOUND AFTER SPLITTING</text>
+    <text x="78" y="211" class="label" text-anchor="start">Decoded string</text>
+    <text x="78" y="242" class="mono" text-anchor="start">… caractères, données, résumé …</text>
+    <line x1="78" y1="265" x2="548" y2="265" class="line"/>
+    <text x="78" y="300" class="mono-dim" text-anchor="start">start_index</text>
+    <text x="250" y="300" class="mono" text-anchor="start">236 characters</text>
+    <text x="78" y="331" class="mono-dim" text-anchor="start">same location in UTF-8</text>
+    <text x="250" y="331" class="mono-amber" text-anchor="start">byte 249</text>
+    <text x="78" y="362" class="mono-dim" text-anchor="start">coordinate drift</text>
+    <text x="250" y="362" class="mono-red" text-anchor="start">+13 bytes</text>
+    <rect x="78" y="395" width="470" height="92" rx="6" class="red-box"/>
+    <text x="102" y="426" class="mono" text-anchor="start">fileBytes.slice(236, …)</text>
+    <text x="102" y="458" class="mono-red" text-anchor="start">WRONG TEXT  ×</text>
+    <text x="78" y="532" class="small" text-anchor="start">The character index is valid for the decoded string.</text>
+    <text x="78" y="553" class="small" text-anchor="start">It fails only when reused as a file-byte offset.</text>
+
+    <rect x="624" y="140" width="526" height="452" rx="6" class="box"/>
+    <text x="652" y="177" class="kicker" text-anchor="start">BYTE POSITION TRACKED DURING SPLIT</text>
+    <text x="652" y="211" class="label" text-anchor="start">Source bytes</text>
+    <text x="652" y="242" class="mono" text-anchor="start">… c3 a9 … f0 9f …</text>
+    <line x1="652" y1="265" x2="1122" y2="265" class="line"/>
+    <text x="652" y="300" class="mono-dim" text-anchor="start">byteStart</text>
+    <text x="824" y="300" class="mono-amber" text-anchor="start">249</text>
+    <text x="652" y="331" class="mono-dim" text-anchor="start">byteEnd</text>
+    <text x="824" y="331" class="mono-amber" text-anchor="start">425</text>
+    <text x="652" y="362" class="mono-dim" text-anchor="start">contentHash</text>
+    <text x="824" y="362" class="mono" text-anchor="start">sha256 …</text>
+    <rect x="652" y="395" width="470" height="92" rx="6" class="green-box"/>
+    <text x="676" y="426" class="mono" text-anchor="start">fileBytes.slice(249, 425)</text>
+    <text x="676" y="458" class="mono-green" text-anchor="start">EXACT TEXT + HASH  ✓</text>
+    <text x="652" y="532" class="small" text-anchor="start">The file coordinate is known when the boundary is made.</text>
+    <text x="652" y="553" class="small" text-anchor="start">stela verifies the slice before returning the chunk.</text>
+
+    <text x="600" y="620" class="mono-amber" text-anchor="middle">236 CHARACTERS  ≠  249 BYTES</text>
+  
+</svg>

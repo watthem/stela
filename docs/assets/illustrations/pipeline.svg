@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Provenance is verified before output.</title>
+  <desc id="description">Seven pipeline stages move from UTF-8 input through validation, decoding, splitting, verification, assessment, and output.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F5A623"/>
+    </marker>
+    <style>
+      .bg { fill: #0a0a0a; }
+      .box { fill: #111111; stroke: #2c2b28; stroke-width: 1.5; }
+      .raised { fill: #181817; stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-box { fill: #251b0d; stroke: #F5A623; stroke-width: 2; }
+      .green-box { fill: #122014; stroke: #5CB85C; stroke-width: 2; }
+      .red-box { fill: #241313; stroke: #E06060; stroke-width: 2; }
+      .title { fill: #e8e6e1; font: 600 36px 'Space Grotesk', Inter, Arial, sans-serif; letter-spacing: -0.7px; }
+      .kicker { fill: #F5A623; font: 600 12px 'Space Mono', ui-monospace, monospace; letter-spacing: 1.8px; }
+      .label { fill: #e8e6e1; font: 600 17px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .body { fill: #e8e6e1; font: 400 15px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .small { fill: #8a8880; font: 400 12px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .mono { fill: #e8e6e1; font: 400 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-dim { fill: #8a8880; font: 400 12px 'Space Mono', ui-monospace, monospace; }
+      .mono-amber { fill: #F5A623; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-green { fill: #5CB85C; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-red { fill: #E06060; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .line { stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-line { stroke: #F5A623; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8a8880; stroke-width: 1.5; stroke-dasharray: 5 6; fill: none; }
+      .watermark { fill: #8a8880; font: 500 11px 'Space Mono', ui-monospace, monospace; letter-spacing: 1px; }
+    </style>
+  </defs>
+  <rect width="1200" height="675" class="bg"/>
+  <text x="50" y="45" class="kicker" text-anchor="start">04 / PIPELINE</text>
+  <text x="50" y="88" class="title" text-anchor="start">Provenance is verified before output.</text>
+  <text x="1150" y="48" class="watermark" text-anchor="end">STELA / PROVENANCE</text>
+  <line x1="50" y1="108" x2="1150" y2="108" class="line"/>
+  
+    <text x="50" y="158" class="kicker" text-anchor="start">A BAD BYTE RANGE NEVER REACHES OUTPUT</text>
+    <text x="50" y="193" class="body" text-anchor="start">Verification is a gate, not an annotation added later.</text>
+    
+      <rect x="50" y="238" width="140" height="180" rx="6" class="box"/>
+      <text x="68" y="268" class="mono-dim" text-anchor="start">01</text>
+      <text x="68" y="309" class="label" text-anchor="start">INPUT</text>
+      <text x="68" y="342" class="small" text-anchor="start">UTF-8 bytes</text>
+      
+      
+    
+      <rect x="210" y="238" width="140" height="180" rx="6" class="box"/>
+      <text x="228" y="268" class="mono-dim" text-anchor="start">02</text>
+      <text x="228" y="309" class="label" text-anchor="start">VALIDATE</text>
+      <text x="228" y="342" class="small" text-anchor="start">reject malformed</text>
+      <text x="228" y="387" class="mono-red" text-anchor="start">FAIL CLOSED ×</text>
+      
+    
+      <rect x="370" y="238" width="140" height="180" rx="6" class="box"/>
+      <text x="388" y="268" class="mono-dim" text-anchor="start">03</text>
+      <text x="388" y="309" class="label" text-anchor="start">DECODE</text>
+      <text x="388" y="342" class="small" text-anchor="start">text + bytes</text>
+      
+      
+    
+      <rect x="530" y="238" width="140" height="180" rx="6" class="box"/>
+      <text x="548" y="268" class="mono-dim" text-anchor="start">04</text>
+      <text x="548" y="309" class="label" text-anchor="start">SPLIT</text>
+      <text x="548" y="342" class="small" text-anchor="start">chunks + ranges</text>
+      
+      
+    
+      <rect x="690" y="238" width="140" height="180" rx="6" class="amber-box"/>
+      <text x="708" y="268" class="mono-dim" text-anchor="start">05</text>
+      <text x="708" y="309" class="label" text-anchor="start">VERIFY</text>
+      <text x="708" y="342" class="small" text-anchor="start">slice + SHA-256</text>
+      
+      <text x="708" y="387" class="mono-green" text-anchor="start">MATCH ✓</text>
+    
+      <rect x="850" y="238" width="140" height="180" rx="6" class="box"/>
+      <text x="868" y="268" class="mono-dim" text-anchor="start">06</text>
+      <text x="868" y="309" class="label" text-anchor="start">ASSESS</text>
+      <text x="868" y="342" class="small" text-anchor="start">quality heuristic</text>
+      
+      
+    
+      <rect x="1010" y="238" width="140" height="180" rx="6" class="green-box"/>
+      <text x="1028" y="268" class="mono-dim" text-anchor="start">07</text>
+      <text x="1028" y="309" class="label" text-anchor="start">OUTPUT</text>
+      <text x="1028" y="342" class="small" text-anchor="start">Chunk[] + stats</text>
+      
+      
+    
+    <path d="M 190 328 L 203 328" class="amber-line"/><path d="M 350 328 L 363 328" class="amber-line"/><path d="M 510 328 L 523 328" class="amber-line"/><path d="M 670 328 L 683 328" class="amber-line"/><path d="M 830 328 L 843 328" class="amber-line"/><path d="M 990 328 L 1003 328" class="amber-line"/>
+    <rect x="690" y="454" width="140" height="44" rx="6" class="amber-box"/>
+    <text x="760" y="482" class="mono-amber" text-anchor="middle">PROVENANCE GATE</text>
+    <line x1="760" y1="418" x2="760" y2="454" class="line"/>
+    <text x="600" y="568" class="mono-dim" text-anchor="middle">INPUT BYTES</text>
+    <path d="M 117 532 L 1080 532" stroke="#2c2b28" stroke-width="6"/>
+    <path d="M 117 532 L 1080 532" stroke="#F5A623" stroke-width="2" stroke-dasharray="4 12"/>
+    <text x="600" y="608" class="body" text-anchor="middle">Seven stages. One checked coordinate system.</text>
+  
+</svg>

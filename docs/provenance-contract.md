@@ -20,6 +20,8 @@ The SHA-256 digest of that same source slice equals `chunk.source.contentHash`, 
 
 Ranges are zero-based and half-open: `byteStart` is included and `byteEnd` is excluded. stela does not normalize line endings, Unicode, or whitespace inside a chunk.
 
+![Verification round trip](assets/illustrations/verification-round-trip.svg)
+
 ## Independent verification
 
 You do not need stela to verify a stored chunk. You need the exact source artifact and Node's standard crypto library:

@@ -29,26 +29,29 @@ Follow the stela brand from the existing site design:
 - Paragraph strategy: chunks split at blank lines
 - Heading strategy: chunks split at `#` headings, showing the heading attached to its section
 
-## Illustration 2: Split-then-find vs. track-during-split
+## Illustration 2: Character vs. byte coordinate systems
 
-**Concept:** The architectural difference between LangChain's approach and stela's.
+**Concept:** A character index and a byte offset diverge for non-ASCII text. Using one as the other points at the wrong bytes.
 
 **Layout, two panels:**
 
-Panel A — "Split then find" (the broken way):
-1. Document text
-2. Arrow: "split into chunks" — chunks appear
-3. Arrow: "text.find(chunk)" — searching back through the document
-4. Result: chunk with `start_index: 0` (wrong) because the substring appears multiple times
-5. Highlight the duplicate substrings in the source to show why find() fails
+Panel A — "Position found after splitting" (the mismatch):
+1. Decoded string with accented characters (French: caractères, données, résumé)
+2. `start_index`: 236 characters
+3. Same location in UTF-8: byte 249
+4. Coordinate drift: +13 bytes
+5. `fileBytes.slice(236, …)` → WRONG TEXT
+6. Note: the character index is valid for the decoded string; it fails only when reused as a file-byte offset.
 
-Panel B — "Track during split" (stela's way):
-1. Document text
-2. Arrow: "split, tracking byte offset as you go" — a cursor/pointer moves through the document
-3. Result: chunk with `byteStart: 1847, byteEnd: 2103` (correct)
-4. Verification step: slice source at those offsets, hash matches
+Panel B — "Byte position tracked during split" (stela's way):
+1. Source bytes with hex (c3 a9, f0 9f)
+2. `byteStart: 249`, `byteEnd: 425`, SHA-256 hash
+3. `fileBytes.slice(249, 425)` → EXACT TEXT + HASH ✓
+4. Note: the file coordinate is known when the boundary is made; stela verifies the slice before returning the chunk.
 
-**What it should make obvious:** the order of operations matters. Finding after splitting is fundamentally broken for documents with repeated content.
+Footer: `236 CHARACTERS ≠ 249 BYTES`
+
+**What it should make obvious:** multi-byte UTF-8 characters cause character counts and byte counts to drift apart. This is the verified mismatch from the repository's French fixture (546 chars, 578 bytes), not a hypothetical.
 
 ## Illustration 3: The verification round-trip
 
@@ -104,7 +107,7 @@ Color-code each chunk differently. Show byte ranges for each.
 ## Priority order
 
 1. The chunk map (Illustration 1) — this is the hero image, use it everywhere
-2. Split-then-find vs. track-during-split (Illustration 2) — this is the differentiator, use in the blog and "Why not X?" page
+2. Character vs. byte coordinate systems (Illustration 2) — this is the differentiator, use in the blog and "Why not X?" page
 3. Verification round-trip (Illustration 3) — use in the provenance contract page
 4. Pipeline stages (Illustration 4) — use in "How it works"
 5. Strategy comparison (Illustration 5) — use in CLI reference

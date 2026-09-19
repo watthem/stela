@@ -10,6 +10,8 @@ npx @watthem/stela README.md
 
 The default output is one JSON object per line. Each object contains the chunk text, a source byte range, a SHA-256 hash, and a quality assessment.
 
+![Pipeline stages](assets/illustrations/pipeline.svg)
+
 ## The pipeline
 
 ### 1. Read the original bytes

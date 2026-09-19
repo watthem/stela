@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Every chunk points back to exact bytes.</title>
+  <desc id="description">Three chunks from the stela README connect to exact half-open byte ranges and truncated SHA-256 hashes.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F5A623"/>
+    </marker>
+    <style>
+      .bg { fill: #0a0a0a; }
+      .box { fill: #111111; stroke: #2c2b28; stroke-width: 1.5; }
+      .raised { fill: #181817; stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-box { fill: #251b0d; stroke: #F5A623; stroke-width: 2; }
+      .green-box { fill: #122014; stroke: #5CB85C; stroke-width: 2; }
+      .red-box { fill: #241313; stroke: #E06060; stroke-width: 2; }
+      .title { fill: #e8e6e1; font: 600 36px 'Space Grotesk', Inter, Arial, sans-serif; letter-spacing: -0.7px; }
+      .kicker { fill: #F5A623; font: 600 12px 'Space Mono', ui-monospace, monospace; letter-spacing: 1.8px; }
+      .label { fill: #e8e6e1; font: 600 17px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .body { fill: #e8e6e1; font: 400 15px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .small { fill: #8a8880; font: 400 12px 'Space Grotesk', Inter, Arial, sans-serif; }
+      .mono { fill: #e8e6e1; font: 400 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-dim { fill: #8a8880; font: 400 12px 'Space Mono', ui-monospace, monospace; }
+      .mono-amber { fill: #F5A623; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-green { fill: #5CB85C; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .mono-red { fill: #E06060; font: 600 13px 'Space Mono', ui-monospace, monospace; }
+      .line { stroke: #2c2b28; stroke-width: 1.5; }
+      .amber-line { stroke: #F5A623; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8a8880; stroke-width: 1.5; stroke-dasharray: 5 6; fill: none; }
+      .watermark { fill: #8a8880; font: 500 11px 'Space Mono', ui-monospace, monospace; letter-spacing: 1px; }
+    </style>
+  </defs>
+  <rect width="1200" height="675" class="bg"/>
+  <text x="50" y="45" class="kicker" text-anchor="start">01 / EXACT SOURCE MAP</text>
+  <text x="50" y="88" class="title" text-anchor="start">Every chunk points back to exact bytes.</text>
+  <text x="1150" y="48" class="watermark" text-anchor="end">STELA / PROVENANCE</text>
+  <line x1="50" y1="108" x2="1150" y2="108" class="line"/>
+  
+    <rect x="50" y="137" width="552" height="480" rx="6" class="box"/>
+    <text x="75" y="169" class="label" text-anchor="start">README.md</text>
+    <text x="75" y="193" class="mono-dim" text-anchor="start">source bytes</text>
+    <line x1="126" y1="215" x2="126" y2="580" class="line"/>
+    <text x="111" y="224" class="mono-dim" text-anchor="end">0</text>
+    <text x="111" y="276" class="mono-dim" text-anchor="end">7</text>
+    <text x="111" y="313" class="mono-dim" text-anchor="end">9</text>
+    <text x="111" y="416" class="mono-dim" text-anchor="end">101</text>
+    <text x="111" y="457" class="mono-dim" text-anchor="end">103</text>
+    <text x="111" y="510" class="mono-dim" text-anchor="end">117</text>
+    <rect x="139" y="218" width="430" height="56" rx="4" fill="#251b0d" stroke="#F5A623"/>
+    <text x="158" y="250" class="mono" text-anchor="start"># stela</text>
+    <rect x="139" y="306" width="430" height="108" rx="4" fill="#17202a" stroke="#6EA8D9"/>
+    <text x="158" y="337" class="mono" text-anchor="start">Git blame for AI answers.</text>
+    <text x="158" y="363" class="mono" text-anchor="start">Chunk UTF-8 text with exact source-byte</text>
+    <text x="158" y="389" class="mono" text-anchor="start">ranges and SHA-256 hashes.</text>
+    <rect x="139" y="450" width="430" height="58" rx="4" fill="#122014" stroke="#5CB85C"/>
+    <text x="158" y="484" class="mono" text-anchor="start">## Quick start</text>
+    <text x="75" y="576" class="small" text-anchor="start">Half-open ranges omit the separators between chunks.</text>
+
+    <text x="682" y="169" class="kicker" text-anchor="start">VERIFIED CHUNKS</text>
+    <rect x="682" y="190" width="468" height="112" rx="6" class="amber-box"/>
+    <text x="706" y="220" class="mono" text-anchor="start">01  # stela</text>
+    <text x="706" y="250" class="mono-amber" text-anchor="start">[0, 7)</text>
+    <text x="828" y="250" class="mono-dim" text-anchor="start">sha256 668a2530…</text>
+    <text x="1092" y="280" class="mono-green" text-anchor="end">SLICE = TEXT  ✓</text>
+
+    <rect x="682" y="322" width="468" height="132" rx="6" class="raised"/>
+    <text x="706" y="352" class="mono" text-anchor="start">02  Git blame for AI answers…</text>
+    <text x="706" y="382" class="mono-amber" text-anchor="start">[9, 101)</text>
+    <text x="828" y="382" class="mono-dim" text-anchor="start">sha256 4a9d3224…</text>
+    <text x="1092" y="424" class="mono-green" text-anchor="end">SLICE = TEXT  ✓</text>
+
+    <rect x="682" y="474" width="468" height="112" rx="6" class="green-box"/>
+    <text x="706" y="504" class="mono" text-anchor="start">03  ## Quick start</text>
+    <text x="706" y="534" class="mono-amber" text-anchor="start">[103, 117)</text>
+    <text x="842" y="534" class="mono-dim" text-anchor="start">sha256 9535b10b…</text>
+    <text x="1092" y="564" class="mono-green" text-anchor="end">SLICE = TEXT  ✓</text>
+
+    <path d="M 569 246 C 625 246, 625 246, 674 246" class="amber-line"/>
+    <path d="M 569 360 C 625 360, 625 388, 674 388" class="dash"/>
+    <path d="M 569 479 C 625 479, 625 530, 674 530" class="amber-line"/>
+  
+</svg>
