@@ -3,3 +3,5 @@ dist/
 *.tgz
 bench/fixture-*.md
 bench/data/
+.env
+.env.local
