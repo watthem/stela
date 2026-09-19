@@ -8,7 +8,8 @@ the standard RAG chunking pipeline cannot provide.
 
 - Node.js >= 22 (for stela CLI)
 - Python 3.12+
-- The stela package at `/home/watthem/Code/stela/` (or `npx @watthem/stela`)
+- A clone of the stela repository (these scripts discover its root relative to
+  this experiment), or the published package available through `npx @watthem/stela`
 
 ## Setup
 

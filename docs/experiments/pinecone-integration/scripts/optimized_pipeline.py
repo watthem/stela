@@ -26,6 +26,7 @@ import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPERIMENT_DIR = os.path.dirname(SCRIPT_DIR)
+STELA_DIR = os.path.abspath(os.path.join(EXPERIMENT_DIR, "..", "..", ".."))
 VENV_SITE = os.path.join(EXPERIMENT_DIR, ".venv", "lib")
 for d in os.listdir(VENV_SITE) if os.path.isdir(VENV_SITE) else []:
     sp = os.path.join(VENV_SITE, d, "site-packages")
@@ -40,8 +41,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 from sentence_transformers import SentenceTransformer
 import faiss
-
-STELA_DIR = "/home/watthem/Code/stela"
 
 # ---------------------------------------------------------------------------
 # Data loading

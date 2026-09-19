@@ -2,6 +2,16 @@
 
 These constraints apply to every agent (Claude, Codex, Astra, or any other) working in this repository.
 
+## Project boundary and coordination
+
+- This repository is public. Keep it limited to source, tests, reproducible experiments, public documentation, and release assets.
+- Private research, GTM planning, customer details, agent memory, scratchpads, and work tracking belong in the configured private companion workspace. Do not copy private material here to make it easier to find.
+- The companion workspace's `agent/MEMORY.md` is the shared durable memory and `agent/WORK.md` is the shared `/work` queue for Claude Code and Codex.
+- The private Google Sheet is authoritative for GTM tasks, launch metrics, and target companies. Do not mirror its rows into `/work` or this repository.
+- Do not use unrelated research repositories as stela workspaces.
+- Forage is retired for stela. Do not read or write `.forage/` state; use `/work`.
+- Treat the public repo and private wiki as the only stela project workspaces. Publication is an explicit move from the private wiki into this repository after evidence and review.
+
 ## Self-verification
 
 stela is a provenance tool. Agents working on it must eat their own dogfood.
@@ -26,18 +36,19 @@ stela is a provenance tool. Agents working on it must eat their own dogfood.
 - Integration guides require a reproducible experiment before they get written. No experiment, no guide.
 - Blog posts go through the humanizer skill before shipping.
 
+## Privacy check
+
+Before committing, scan the diff for private plans, prospect or customer data, unpublished pricing strategy, credentials, and local-only paths. Move private context to the configured companion workspace; never commit secrets.
+
 ## Handoff protocol
 
-When stopping mid-work, commit with a message that starts with `WIP:` and includes:
-- What was completed
-- What is next
-- Any blockers
+Use `/work end` for handoff. If stopping mid-code change, make a recoverable `WIP:` commit only when the current repository workflow authorizes a commit, and record the exact next step in the shared private tracker.
 
 This lets the next agent (or the same agent in a new session) pick up without re-deriving context.
 
 ## Code
 
-- All 18 tests must pass before committing changes to `src/`.
+- The complete test suite must pass before committing changes to `src/`.
 - Zero runtime dependencies is a hard constraint.
 - Node.js >= 22.
 - Don't normalize line endings or Unicode in chunks. Chunks are verbatim slices.
