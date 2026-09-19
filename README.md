@@ -77,6 +77,7 @@ For exact disk-file provenance, pass `readFileSync(path)` as a Buffer instead of
 - [Library API](docs/library-api.md)
 - [When to use stela instead of another tool](docs/why-stela.md)
 - [LangChain integration](docs/integrations/langchain.md)
+- [LlamaIndex integration](docs/integrations/llamaindex.md)
 
 ## Quality assessments and migration
 

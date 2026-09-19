@@ -8,7 +8,7 @@
       content="stela — chunk UTF-8 text with exact source byte ranges and SHA-256 hashes. Trace every RAG chunk back to its source paragraph."
     >
     <meta name="color-scheme" content="dark">
-    <title>stela — git blame for AI answers</title>
+    <title>stela — provenance audits for RAG pipelines</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%230a0a0a'/%3E%3Crect x='8' y='8' width='16' height='16' rx='3' fill='%23F5A623'/%3E%3C/svg%3E"
@@ -420,6 +420,79 @@
         margin-top: 0.25rem;
       }
 
+      /* AUDIT */
+      .audit-split {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: clamp(2rem, 6vw, 3.75rem);
+        align-items: start;
+      }
+
+      .audit-split h2 {
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin: 0 0 1.25rem;
+      }
+
+      .audit-split p {
+        color: var(--dim);
+        font-size: 0.9375rem;
+        line-height: 1.75;
+        margin: 0 0 1rem;
+      }
+
+      .audit-detail {
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: var(--dim);
+      }
+
+      .audit-detail dt {
+        color: var(--text);
+        font-weight: 700;
+        margin-top: 1rem;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+      }
+
+      .audit-detail dt:first-child { margin-top: 0; }
+
+      .audit-detail dd {
+        margin: 0.25rem 0 0;
+      }
+
+      .audit-cta {
+        display: inline-block;
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--amber);
+        color: var(--bg);
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+      }
+      .audit-cta:hover { background: var(--text); color: var(--bg); }
+
+      .reg-note {
+        margin-top: 2rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--amber-dim);
+        border: 1px solid var(--amber-border);
+        font-size: 0.8125rem;
+        line-height: 1.7;
+        color: var(--dim);
+      }
+
+      .reg-note strong { color: var(--text); }
+
+      @media (max-width: 760px) {
+        .audit-split { grid-template-columns: 1fr; }
+      }
+
       /* CONTACT */
       .contact-grid {
         display: grid;
@@ -526,11 +599,12 @@
             <ul class="nav-links">
               <li><a href="#problem">problem</a></li>
               <li><a href="#how">how it works</a></li>
-              <li><a href="#demo">see it work</a></li>
+              <li><a href="#demo">evidence</a></li>
+              <li><a href="#audit">audit</a></li>
               <li><a href="#contact">contact</a></li>
             </ul>
           </nav>
-          <span class="version-tag">v0.2.0</span>
+          <span class="version-tag">v0.2.1</span>
         </div>
       </div>
     </header>
@@ -539,11 +613,11 @@
 
       <!-- HERO -->
       <section class="shell hero" id="top">
-        <h1>Git blame for <span>AI answers.</span></h1>
+        <h1>Prove where every <span>AI answer</span> came from.</h1>
         <p class="hero-tagline">
-          Chunk UTF-8 text with exact source byte ranges and SHA-256 hashes.
-          Trace every chunk back to its source paragraph, verify it hasn't changed,
-          and know when it has.
+          stela chunks UTF-8 text with exact source byte ranges and SHA-256 hashes.
+          Every chunk traces back to its source paragraph. When a source changes,
+          you know which answers are stale. When a regulator asks, you have the receipt.
         </p>
         <div class="hero-install">
           <span>$</span> npx @watthem/stela your-document.txt --strategy paragraph --json
@@ -692,16 +766,65 @@
         </div>
       </section>
 
+      <!-- AUDIT -->
+      <section class="section" id="audit">
+        <div class="shell">
+          <p class="section-label">compliance audit</p>
+
+          <div class="audit-split">
+            <div>
+              <h2>Can your RAG pipeline survive an audit?</h2>
+              <p>
+                You give us your document corpus and your pipeline's stored chunks.
+                We run stela against the source documents and produce a report showing
+                which chunks verify, which are stale, which have no provenance,
+                and where coverage gaps exist.
+              </p>
+              <p>
+                The report is compliance-ready: every finding is backed by byte ranges
+                and cryptographic hashes, independently reproducible by anyone with
+                the source files.
+              </p>
+              <a
+                class="audit-cta"
+                href="mailto:matthew.scott.hendricks@gmail.com?subject=stela%20audit"
+              >Book a corpus audit</a>
+
+              <div class="reg-note">
+                <strong>Regulatory context:</strong> EU GPAI transparency provisions (Art 53)
+                and California SB 942 create disclosure requirements for AI systems
+                that use retrieved content. A provenance audit is one way to demonstrate
+                that your pipeline can trace answers to their sources.
+              </div>
+            </div>
+
+            <dl class="audit-detail">
+              <dt>What you get</dt>
+              <dd>HTML/PDF report with per-chunk verification status, stale detection results, and coverage analysis across your corpus.</dd>
+
+              <dt>What it costs</dt>
+              <dd>$500 -- $2,000 per corpus, depending on document count and pipeline complexity. No subscriptions.</dd>
+
+              <dt>How long it takes</dt>
+              <dd>Most audits complete within a week. You keep the report and the methodology.</dd>
+
+              <dt>What you need</dt>
+              <dd>Your source documents (UTF-8 text, or extracted text from PDFs) and your pipeline's stored chunk data.</dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
       <!-- CONTACT -->
       <section class="section" id="contact">
         <div class="shell contact-grid">
-          <h2>Need to trace an AI answer to its source?</h2>
+          <h2>Let's talk about your pipeline.</h2>
           <div class="contact-copy">
             <p>
               stela is built by
               <a href="https://matthewhendricks.net" style="color: var(--text);">Matthew Hendricks</a>.
-              If your RAG pipeline can't explain where an answer came from,
-              I'd like to hear about it.
+              Whether you need a provenance audit or want to integrate stela
+              into your own pipeline, I'd like to hear about it.
             </p>
             <a
               class="contact-link"
