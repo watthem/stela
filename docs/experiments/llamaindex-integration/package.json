@@ -1,0 +1,18 @@
+{
+  "name": "stela-llamaindex-experiment",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx run.ts",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@watthem/stela": "0.2.1",
+    "llamaindex": "0.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

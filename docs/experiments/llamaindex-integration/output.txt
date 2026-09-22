@@ -1,0 +1,10 @@
+
+1. pipeline: 3 nodes
+   [0, 120) heading="Services Agreement" level=1 hashVerified=true
+   [122, 188) heading="Section 2. Payment" level=2 hashVerified=true
+   [190, 256) heading="Section 3. Termination" level=2 hashVerified=true
+2. retrieved 3, verifyNode: [true,true,true]
+3a. same-length edit in Section 2, failed: ["Section 2. Payment"]
+3b. shorter edit in Section 2, failed: ["Section 2. Payment","Section 3. Termination"]
+4. text-only: [0, 5) for "Café"
+5. Settings.nodeParser honored by fromDocuments: false (1 nodes)

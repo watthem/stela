@@ -1,0 +1,1 @@
+{"compilerOptions":{"module":"nodenext","moduleResolution":"nodenext","target":"es2022","strict":true,"skipLibCheck":true,"noEmit":true,"allowImportingTsExtensions":true,"types":["node"]},"files":["stela-node-parser.ts"]}
