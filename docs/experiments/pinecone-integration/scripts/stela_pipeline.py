@@ -250,7 +250,7 @@ def main():
             faiss.normalize_L2(query_emb)
             scores, indices = index.search(query_emb, 5)
 
-            retrieved = [chunks[i] for i in indices[0] if i < len(chunks)]
+            retrieved = [chunks[i] for i in indices[0] if 0 <= i < len(chunks)]
             overlap = compute_retrieval_overlap(retrieved, qa["answers"], text)
             if overlap is not None:
                 doc_retrieval_overlaps.append(overlap)
