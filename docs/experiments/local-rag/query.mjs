@@ -10,12 +10,14 @@
 // Near-duplicate parents collapse into the best-ranked one and are listed under `similar`:
 // templated lines (same opening words once dates/IDs are stripped, cosine >= 0.75) and
 // copies (cosine >= 0.97). --no-collapse turns this off.
+// --prior 'glob=factor,...' multiplies the fused score of chunks whose path matches (e.g. 'glossary/**=0.5').
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { embed, pool, toVec } from './db.mjs';
 
 const args = process.argv.slice(2);
-const q = args.find(a => !a.startsWith('--') && !/^\d+$/.test(a) && !['sentence', 'window', 'parent'].includes(a));
+const flagArgs = new Set(['--k', '--return', '--root', '--prior']);
+const q = args.find((a, i) => !a.startsWith('--') && !flagArgs.has(args[i - 1]));
 if (!q) { console.error('usage: query.mjs "question" [--k 5] [--return sentence|window|parent] [--json]'); process.exit(2); }
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const k = Number(opt('--k', 5));
@@ -23,12 +25,16 @@ const mode = opt('--return', 'window');
 const asJson = args.includes('--json');
 const root = opt('--root');
 const collapse = !args.includes('--no-collapse');
+const globRe = (g) => new RegExp('^' + g.split('**').map(p => p.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*')).join('.*') + '$');
+const priors = (opt('--prior', '') || '').split(',').filter(Boolean).map(x => { const [g, f] = x.split('='); return [globRe(g), Number(f)]; });
+const prior = (path) => priors.reduce((m, [re, f]) => (re.test(path) ? m * f : m), 1);
 
 await pool.query('SET hnsw.ef_search = 100');
 await pool.query("SET hnsw.iterative_scan = 'relaxed_order'");
 const [qv] = await embed([q], { query: true });
 
 // RRF over two ranked lists (k=60). Candidates: 50 dense + 50 lexical.
+// Lexical ORs the query's terms: a question ANDed word-for-word matches almost nothing.
 const { rows: hits } = await pool.query(`
   WITH dense AS (
     SELECT id, row_number() OVER (ORDER BY embedding <=> $1::halfvec) AS r
@@ -36,7 +42,7 @@ const { rows: hits } = await pool.query(`
           ORDER BY embedding <=> $1::halfvec LIMIT 50) d
   ), lexical AS (
     SELECT id, row_number() OVER (ORDER BY ts_rank_cd(tsv, query) DESC) AS r
-    FROM chunks, websearch_to_tsquery('english', $2) query
+    FROM chunks, CAST(replace(plainto_tsquery('english', $2)::text, ' & ', ' | ') AS tsquery) query
     WHERE tsv @@ query ORDER BY ts_rank_cd(tsv, query) DESC LIMIT 50
   ), fused AS (
     SELECT id, sum(1.0 / (60 + r)) AS score FROM (
@@ -46,6 +52,7 @@ const { rows: hits } = await pool.query(`
          (SELECT r FROM dense WHERE dense.id = c.id) AS dense_rank,
          (SELECT r FROM lexical WHERE lexical.id = c.id) AS lexical_rank
   FROM fused f JOIN chunks c USING (id) ORDER BY f.score DESC LIMIT 100`, [toVec(qv), q]);
+if (priors.length) { for (const h of hits) h.score = Number(h.score) * prior(h.doc_path); hits.sort((a, b) => b.score - a.score); }
 
 // Opening words with dates, hashes, numbers, links and markup removed: equal for templated lines.
 const opening = (t) => t.toLowerCase()

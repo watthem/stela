@@ -7,6 +7,7 @@
 //   1. parent mapping: sentences are segmented inside each paragraph and carry parentId
 //   2. wrap-aware sentences: a lone "\n" inside a paragraph is treated as a space for
 //      segmentation only (same byte length), so hard-wrapped prose is not split per line.
+//   4. frontmatter as metadata: a leading YAML block is not chunked.
 //   3. heading attachment: a paragraph that is only a Markdown heading is merged into the next
 //      paragraph (one contiguous byte range), so bare headings don't win dense ranks alone.
 // Every record's text is still an exact slice of the source bytes and is re-verified here.
@@ -43,6 +44,7 @@ function* walk(dir) {
 const BLOCK_START = /^[ \t]*(?:[-*+] |\d+[.)] |#{1,6} |> |\||```|~~~)/;
 const HEADING_LINE = /^[ \t]*#{1,6} /;
 const HEADING_ONLY = /^[ \t]*#{1,6} [^\n]*\s*$/;
+const FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/;
 
 /** Sentence spans (byte offsets relative to the paragraph) with wrap-aware segmentation. */
 function sentenceSpans(paraBuf) {
@@ -98,8 +100,11 @@ for (const rel of walk(root)) {
   // Attach heading-only paragraphs to the next paragraph; trailing headings stay on their own.
   const units = [];
   let pendingStart = null;
+  const fm = FRONTMATTER.exec(buf.toString('utf8'));
+  const fmEnd = fm ? Buffer.byteLength(fm[0]) : 0;
   for (const c of result.chunks) {
     const { byteStart, byteEnd, contentHash } = c.source;
+    if (byteEnd <= fmEnd) continue;
     if (HEADING_ONLY.test(c.text)) { pendingStart ??= byteStart; continue; }
     units.push(pendingStart === null
       ? { ps: byteStart, pe: byteEnd, hash: contentHash, verdict: c.assessment.verdict }

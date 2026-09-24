@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Score return modes against a labeled query set at an equal token budget.
-//   node eval.mjs <queries.jsonl> [--budget 1500,500] [--k 20] [--json out.json]
+//   node eval.mjs <queries.jsonl> [--budget 1500,500] [--k 20] [--json out.json] [--modes parent,window] [--query-args '--prior glossary/**=0.5']
 //
 // Each line of the set: {"id","query","gold":[{"path","phrase"}]}. `phrase` is a verbatim
 // passage that answers the query. A result answers a query when its returned text contains
@@ -26,6 +26,8 @@ const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] :
 const budgets = opt('--budget', '1500,500').split(',').map(Number);
 const k = Number(opt('--k', 20));
 const out = opt('--json');
+const modes = opt('--modes', 'sentence,window,parent').split(',');
+const extra = (opt('--query-args', '') || '').split(' ').filter(Boolean);
 const here = dirname(fileURLToPath(import.meta.url));
 
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
@@ -35,11 +37,12 @@ const queries = readFileSync(set, 'utf8').split('\n').filter(Boolean).map(l => J
 function retrieve(query, mode, collapse) {
   const a = [join(here, 'query.mjs'), query, '--k', String(k), '--return', mode, '--json'];
   if (!collapse) a.push('--no-collapse');
+  a.push(...extra);
   return JSON.parse(execFileSync('node', a, { encoding: 'utf8', maxBuffer: 64 << 20 }));
 }
 
 const configs = [];
-for (const mode of ['sentence', 'window', 'parent']) for (const collapse of [true, false]) configs.push({ mode, collapse });
+for (const mode of modes) for (const collapse of [true, false]) configs.push({ mode, collapse });
 
 const rows = [];
 for (const q of queries) {

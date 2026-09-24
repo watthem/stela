@@ -34,6 +34,20 @@ node query.mjs "does stela normalize unicode?" --return window --root ../..
 node eval.mjs queries.jsonl --budget 1500,500    # score sentence/window/parent at equal token budget
 ```
 
+Two ways to look at the index outside the CLI:
+
+```bash
+# Agents: an MCP server (stdio, no SDK) with search / related / read tools
+claude mcp add stela-rag -e DATABASE_URL=... -e STELA_ROOT=/path/to/indexed/dir -- node "$PWD/mcp.mjs"
+
+# People: Apple's Embedding Atlas over the stored paragraph vectors (no re-embedding)
+uv tool install embedding-atlas
+~/.local/share/uv/tools/embedding-atlas/bin/python atlas_export.py /somewhere/private/paragraphs.parquet
+embedding-atlas /somewhere/private/paragraphs.parquet --vector embedding --text text
+```
+
+The Parquet file contains the indexed text. Keep it out of any published repository.
+
 `--root` re-reads each returned range from disk and compares it byte-for-byte. ✓ means the cited bytes are still what the file contains. ✗ STALE means the file changed after indexing.
 
 `load.mjs` is incremental. Unchanged files (same SHA-256) are skipped, changed files are replaced, and deleted files are removed. Embeddings are cached by the hash of the embedded text, so moved or duplicated text isn't re-embedded.
@@ -43,13 +57,28 @@ node eval.mjs queries.jsonl --budget 1500,500    # score sentence/window/parent 
 - stela `docs/` (16 files): 431 paragraphs, 975 sentences. After keeping `pass` paragraphs and dropping sentences identical to their paragraph, 686 chunks were embedded.
 - Embedding throughput: **6.39 chunks/s** on a GTX 1060 3GB (Ollama split the model 77% GPU / 23% CPU).
 - Chunking a ~3,500-file Markdown tree takes ~14 s and 1.5 GB RSS after making offset conversion linear. The first version re-measured each paragraph prefix per sentence and stalled on a 10 MB file.
-- Markdown frontmatter, HTML comments, and query blocks show up as their own paragraphs and are mostly `flag`ged by stela's assessment. Treating frontmatter as metadata rather than a chunk is a candidate improvement.
-
-Not yet measured: retrieval quality on a labeled set, and bounded expansion (`sentence` / `window` / `parent`) at an equal token budget. Treat the return modes as mechanics, not results.
+- Markdown frontmatter, HTML comments, and query blocks show up as their own paragraphs and are mostly `flag`ged by stela's assessment. `chunk.mjs` now skips a leading YAML frontmatter block (it is metadata, not content).
+- `--min-verdict pass` is too strict for notes: stela flags about half of all Markdown paragraphs (14,987 of 29,407), including clean prose, tables, and lists that end in `:` (`mid_sentence_boundary`). The vault index now loads every verdict.
 
 ## Evaluating return modes
 
 `eval.mjs` scores `sentence` / `window` / `parent`, with near-duplicate collapse on and off, against a labeled set. Each line of the set is `{"id","query","gold":[{"path","phrase"}]}`, where `phrase` is a verbatim passage that answers the query. A query counts as answered when that passage appears within the first B tokens of context, packed in rank order. It also reports MRR and doc@5. Tokens are approximated as chars/4.
 
 First private run (32 vault queries, 2026-09-24): parent and window tie on answered@1500 (0.41), and window leads at 500 tokens (0.31 vs 0.25). doc@5 is only 0.50, so recall, not the return unit, is the bottleneck on that corpus. With k=20, sentence mode filled only ~970 of 1,500 tokens, so its budget wasn't truly equal. Small n: the gaps are 2–3 queries.
+
+Recall follow-up (same 32 queries, parent mode, collapse on; sentence vectors for newly admitted paragraphs were still pending):
+
+| Change | MRR | doc@5 | ans@1500 | ans@500 |
+|---|---|---|---|---|
+| baseline (`pass` only) | 0.28 | 0.50 | 0.41 | 0.25 |
+| all verdicts, frontmatter skipped | 0.26 | 0.53 | 0.38 | 0.22 |
+| + derived snapshot copies excluded | 0.26 | 0.56 | 0.38 | 0.22 |
+| + **lexical ORs query terms** | **0.35** | **0.66** | 0.41 | **0.38** |
+| + `--prior 'glossary/**=0.5'` | 0.35 | 0.59 | 0.44 | 0.38 |
+
+- The biggest miss was lexical retrieval. `websearch_to_tsquery` ANDs every word of a natural-language question, so for every missed query FTS matched **none** of the gold paragraphs, and "hybrid" was effectively dense-only. ORing the terms (ranked by `ts_rank_cd`) fixed most of it.
+- Length-normalizing `ts_rank_cd` made results worse (MRR 0.31 with flag 1, 0.12 with flag 2).
+- Admitting all verdicts reached previously gated answers, but diluted the rest.
+- Remaining misses are mostly dense misses: the gold paragraph ranks in the hundreds or thousands for questions phrased differently from the note.
+- A single "paragraph" can be a 200–300 KB generated list with no blank lines. It matches almost any OR query and fills the budget, which is what the path prior works around. Splitting over-long parents is the real fix.
 
