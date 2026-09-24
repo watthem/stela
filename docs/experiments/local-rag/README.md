@@ -15,6 +15,7 @@ Everything runs locally with no paid services.
 | Store | Postgres 17 + pgvector 0.8.6 (`halfvec(1024)`, HNSW, iterative scan) | provenance columns + parent join + full-text search in one database |
 | Lexical | Postgres `tsvector` + `ts_rank_cd` | no extra service; not BM25 |
 | Fusion | reciprocal rank fusion, k=60 | standard, parameter-light |
+| Diversity | collapse near-duplicate parents (same opening words + cosine ≥ 0.75, or cosine ≥ 0.97) | templated lines and snapshot copies otherwise fill the top k; collapsed hits are listed under `similar` |
 
 ## Run
 
