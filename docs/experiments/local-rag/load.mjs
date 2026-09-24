@@ -2,7 +2,8 @@
 // Load chunk.mjs output into Postgres. Incremental: unchanged documents (same sha256) are
 // skipped, changed ones are replaced, missing ones are deleted. Embeddings are reused from
 // embedding_cache when the embedded text is identical.
-//   node load.mjs chunks.ndjson [--exclude-path path,path] [--min-verdict pass]
+//   node load.mjs chunks.ndjson [--exclude-path path,path] [--min-verdict pass] [--force]
+// --force reloads every document even if unchanged (use after changing how chunk.mjs chunks).
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { MODEL, pool } from './db.mjs';
@@ -11,6 +12,7 @@ const [file, ...rest] = process.argv.slice(2);
 const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : undefined; };
 const excluded = new Set((opt('--exclude-path') ?? '').split(',').filter(Boolean));
 const passOnly = opt('--min-verdict') === 'pass';
+const force = rest.includes('--force');
 
 const docs = new Map();
 for await (const line of createInterface({ input: createReadStream(file) })) {
@@ -30,7 +32,7 @@ for (const path of existing.keys()) {
   if (!docs.has(path)) { await db.query('DELETE FROM documents WHERE doc_path=$1', [path]); removed++; }
 }
 for (const [path, { sha: docSha, rows }] of docs) {
-  if (existing.get(path) === docSha) { unchanged++; continue; }
+  if (!force && existing.get(path) === docSha) { unchanged++; continue; }
   await db.query('DELETE FROM documents WHERE doc_path=$1', [path]);
   await db.query('INSERT INTO documents (doc_path, doc_sha256) VALUES ($1,$2)', [path, docSha]);
   const keepParents = new Set(rows.filter(r => r.kind === 'parent' && (!passOnly || r.verdict === 'pass')).map(r => r.id));

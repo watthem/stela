@@ -1,9 +1,10 @@
 # Local RAG with provenance: stela → Postgres + pgvector
 
-Status: **experiment**. It prototypes two ideas before they reach `src/`:
+Status: **experiment**. It prototypes three ideas before they reach `src/`:
 
 1. **Parent mapping.** Sentences are segmented *inside* each paragraph and carry a `parent_id`, so a sentence hit promotes to its paragraph with a lookup instead of a containment scan.
 2. **Wrap-aware sentence segmentation.** `Intl.Segmenter` breaks a sentence at every line feed (UAX #29 rule SB4), so hard-wrapped prose (`"…is hard\nwrapped…"`) comes back as line fragments. `chunk.mjs` segments a copy where a lone LF between prose lines becomes a space (same byte length) and slices the original bytes. Chunk text stays verbatim and offsets stay exact.
+3. **Heading attachment.** A paragraph that is only a Markdown heading (`# Bacon`) is merged into the paragraph that follows it. The merged parent is one contiguous byte range, so provenance stays exact. The heading line is not emitted as its own sentence. A heading at the end of a file, with nothing after it, stays on its own.
 
 Everything runs locally with no paid services.
 
@@ -26,7 +27,7 @@ ollama pull qwen3-embedding:0.6b
 npm install
 
 node chunk.mjs ../.. --out chunks.ndjson --exclude 'experiments/**'   # stela's own docs
-node load.mjs chunks.ndjson --min-verdict pass    # incremental; rerun after edits
+node load.mjs chunks.ndjson --min-verdict pass    # incremental; rerun after edits (--force after chunker changes)
 node embed.mjs                                    # resumable
 node query.mjs "does stela normalize unicode?" --return window --root ../..
 ```

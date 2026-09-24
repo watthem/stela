@@ -7,6 +7,8 @@
 //   1. parent mapping: sentences are segmented inside each paragraph and carry parentId
 //   2. wrap-aware sentences: a lone "\n" inside a paragraph is treated as a space for
 //      segmentation only (same byte length), so hard-wrapped prose is not split per line.
+//   3. heading attachment: a paragraph that is only a Markdown heading is merged into the next
+//      paragraph (one contiguous byte range), so bare headings don't win dense ranks alone.
 // Every record's text is still an exact slice of the source bytes and is re-verified here.
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -39,6 +41,8 @@ function* walk(dir) {
 
 // Lines that start a block (list item, heading, quote, table, fence) keep their line break.
 const BLOCK_START = /^[ \t]*(?:[-*+] |\d+[.)] |#{1,6} |> |\||```|~~~)/;
+const HEADING_LINE = /^[ \t]*#{1,6} /;
+const HEADING_ONLY = /^[ \t]*#{1,6} [^\n]*\s*$/;
 
 /** Sentence spans (byte offsets relative to the paragraph) with wrap-aware segmentation. */
 function sentenceSpans(paraBuf) {
@@ -51,7 +55,10 @@ function sentenceSpans(paraBuf) {
     const part = lines[i];
     const isBreak = part === '\n' || part === '\r\n';
     const next = lines[i + 1] ?? '';
-    seg += isBreak && !BLOCK_START.test(next) ? ' '.repeat(part.length) : part;
+    // Keep the break at a blank line or after a heading (both occur once headings are attached).
+    const prev = lines[i - 1] ?? '';
+    const hard = BLOCK_START.test(next) || next === '' || prev === '' || HEADING_LINE.test(prev);
+    seg += isBreak && !hard ? ' '.repeat(part.length) : part;
   }
   // Convert UTF-16 offsets to byte offsets incrementally (segments arrive in order), so a
   // multi-megabyte paragraph stays linear instead of re-measuring from 0 for every sentence.
@@ -88,21 +95,37 @@ for (const rel of walk(root)) {
   }
   files++;
   const docSha = sha256(buf);
+  // Attach heading-only paragraphs to the next paragraph; trailing headings stay on their own.
+  const units = [];
+  let pendingStart = null;
   for (const c of result.chunks) {
-    const { byteStart: ps, byteEnd: pe, contentHash } = c.source;
+    const { byteStart, byteEnd, contentHash } = c.source;
+    if (HEADING_ONLY.test(c.text)) { pendingStart ??= byteStart; continue; }
+    units.push(pendingStart === null
+      ? { ps: byteStart, pe: byteEnd, hash: contentHash, verdict: c.assessment.verdict }
+      : { ps: pendingStart, pe: byteEnd, hash: null, verdict: c.assessment.verdict });
+    pendingStart = null;
+  }
+  if (pendingStart !== null) {
+    const last = result.chunks.at(-1).source;
+    units.push({ ps: pendingStart, pe: last.byteEnd, hash: null, verdict: 'pass' });
+  }
+  for (const { ps, pe, hash, verdict } of units) {
+    const paraBuf = buf.subarray(ps, pe);
+    const text = paraBuf.toString('utf8');
     const parentId = `p:${docSha.slice(0, 16)}:${ps}-${pe}`;
-    if (c.assessment.verdict === 'reject') rejected++;
+    if (verdict === 'reject') rejected++;
     records.push({
       id: parentId, kind: 'parent', parent_id: null, doc_path: rel, doc_sha256: docSha,
-      byte_start: ps, byte_end: pe, content_sha256: contentHash, verdict: c.assessment.verdict,
-      text: c.text, embed_text: embedText(c.text),
+      byte_start: ps, byte_end: pe, content_sha256: hash ?? sha256(paraBuf), verdict,
+      text, embed_text: embedText(text),
     });
     parents++;
-    const paraBuf = buf.subarray(ps, pe);
     for (const [s, e] of sentenceSpans(paraBuf)) {
       const slice = buf.subarray(ps + s, ps + e);
       const text = slice.toString('utf8');
       if (Buffer.byteLength(text) !== e - s) throw new Error(`byte mismatch in ${rel} @${ps + s}`);
+      if (HEADING_ONLY.test(text) && e - s < pe - ps) continue; // headings live in the parent only
       records.push({
         id: `s:${docSha.slice(0, 16)}:${ps + s}-${ps + e}`, kind: 'sentence', parent_id: parentId,
         doc_path: rel, doc_sha256: docSha, byte_start: ps + s, byte_end: ps + e,
