@@ -19,7 +19,20 @@ while (done < limit) {
      ORDER BY (kind='parent') DESC, doc_path, byte_start LIMIT $1`,
     kind ? [Math.min(batchSize, limit - done), kind] : [Math.min(batchSize, limit - done)]);
   if (!rows.length) break;
-  const vecs = await embed(rows.map(r => r.embed_text || ' '));
+  const texts = rows.map(r => r.embed_text || ' ');
+  let vecs;
+  try { vecs = await embed(texts); } catch (err) {
+    if (!/exceeds the context length/.test(err.message)) throw err;
+    // One oversized chunk fails the whole batch: embed singly, truncating only the chunks that overflow.
+    vecs = [];
+    for (let i = 0; i < texts.length; i++) {
+      try { vecs.push((await embed([texts[i]]))[0]); } catch (e) {
+        if (!/exceeds the context length/.test(e.message)) throw e;
+        console.error(`truncated ${rows[i].id} (${texts[i].length} chars)`);
+        vecs.push((await embed([texts[i]], { truncate: true }))[0]);
+      }
+    }
+  }
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
