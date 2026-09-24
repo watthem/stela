@@ -31,6 +31,7 @@ node chunk.mjs ../.. --out chunks.ndjson --exclude 'experiments/**'   # stela's 
 node load.mjs chunks.ndjson --min-verdict pass    # incremental; rerun after edits (--force after chunker changes)
 node embed.mjs                                    # resumable
 node query.mjs "does stela normalize unicode?" --return window --root ../..
+node eval.mjs queries.jsonl --budget 1500,500    # score sentence/window/parent at equal token budget
 ```
 
 `--root` re-reads each returned range from disk and compares it byte-for-byte. ✓ means the cited bytes are still what the file contains. ✗ STALE means the file changed after indexing.
@@ -45,3 +46,10 @@ node query.mjs "does stela normalize unicode?" --return window --root ../..
 - Markdown frontmatter, HTML comments, and query blocks show up as their own paragraphs and are mostly `flag`ged by stela's assessment. Treating frontmatter as metadata rather than a chunk is a candidate improvement.
 
 Not yet measured: retrieval quality on a labeled set, and bounded expansion (`sentence` / `window` / `parent`) at an equal token budget. Treat the return modes as mechanics, not results.
+
+## Evaluating return modes
+
+`eval.mjs` scores `sentence` / `window` / `parent`, with near-duplicate collapse on and off, against a labeled set. Each line of the set is `{"id","query","gold":[{"path","phrase"}]}`, where `phrase` is a verbatim passage that answers the query. A query counts as answered when that passage appears within the first B tokens of context, packed in rank order. It also reports MRR and doc@5. Tokens are approximated as chars/4.
+
+First private run (32 vault queries, 2026-09-24): parent and window tie on answered@1500 (0.41), and window leads at 500 tokens (0.31 vs 0.25). doc@5 is only 0.50, so recall, not the return unit, is the bottleneck on that corpus. With k=20, sentence mode filled only ~970 of 1,500 tokens, so its budget wasn't truly equal. Small n: the gaps are 2–3 queries.
+
