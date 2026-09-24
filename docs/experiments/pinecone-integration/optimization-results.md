@@ -12,12 +12,14 @@ Each row adds one optimization on top of the previous row's configuration.
 
 ## Results
 
-| Configuration | Retrieval Overlap | Precision@5 | IoU@5 | Complete-Grounding@5 | Clause-Intact | Time |
+| Configuration | Retrieval Overlap | Character precision@5 | IoU@5 | Complete-Grounding@5 | Clause-Intact | Time |
 |---|---|---|---|---|---|---|
 | stela paragraph (baseline) | 37.3% | 7.6% | 6.7% | 36.7% | 95.5% | 269s |
 | + strip boilerplate | 38.4% (+1.1pp) | 8.4% | 7.2% | 37.3% | 95.5% | 268s |
-| + multi-strategy promotion | **50.4% (+13.1pp)** | 6.5% | 6.1% | **50.1%** | 95.5% | 316s |
-| + hybrid BM25 (RRF) | 49.2% (+11.9pp) | 6.3% | 5.9% | 47.4% | 95.5% | 315s |
+| + multi-strategy promotion | **50.4% (+13.1pp)** | 7.2% | 6.5% | **49.5%** | 95.5% | 402s |
+| + hybrid BM25 (RRF) | 45.6% (+8.3pp) | 6.2% | 5.7% | 44.7% | 95.5% | 362s |
+
+"Character precision" is relevant retrieved characters divided by retrieved characters. It is not precision over the five hits. Times are wall-clock on a shared workstation and are not comparable across rows.
 
 **Best configuration**: strip-boilerplate + multi-strategy (without BM25 hybrid)
 
@@ -48,15 +50,15 @@ This is the largest single improvement and the key stela-unique technique:
 This works because sentence-level embeddings match queries more precisely (less noise from surrounding context), while paragraph-level output provides the full clause context needed for grounding. The byte-range provenance that stela provides is what makes the promotion step possible without re-chunking or string matching.
 
 Notable per-document improvements with this technique:
-- contract_10 (Goosehead Insurance): 13.0% -> 36.0% (+23pp)
-- contract_15 (Todos Medical): 39.1% -> 84.8% (+46pp)
-- contract_14 (Conformis): 37.6% -> 50.1% (+12.5pp)
-- contract_01 (Xencor): 19.5% -> 47.5% (+28pp)
-- contract_05 (Sucampo): 38.7% -> 50.0% (+11.3pp)
+- contract_15 (Todos Medical): 39.1% -> 84.8% (+45.7pp)
+- contract_10 (Goosehead Insurance): 13.0% -> 43.9% (+30.9pp)
+- contract_05 (Sucampo): 38.7% -> 62.5% (+23.8pp)
+- contract_01 (Xencor): 19.5% -> 39.8% (+20.3pp)
+- contract_14 (Conformis): 37.6% -> 42.7% (+5.1pp)
 
-### 3. BM25 + dense hybrid with RRF (-1.2pp)
+### 3. BM25 + dense hybrid with RRF (-4.8pp)
 
-Adding BM25 (Okapi) scoring with Reciprocal Rank Fusion (k=60) over top-20 candidates from each signal **slightly hurt** performance (50.4% -> 49.2%).
+Adding BM25 (Okapi) scoring with Reciprocal Rank Fusion (k=60) over top-20 candidates from each signal **hurt** performance (50.4% -> 45.6%).
 
 This is likely because:
 - CUAD contract queries are already semantically distinctive (after boilerplate removal)
@@ -112,3 +114,14 @@ cd docs/experiments/pinecone-integration
 .venv/bin/python scripts/optimized_pipeline.py --strip-boilerplate --multi-strategy \
   --embedding-model Qwen/Qwen3-Embedding-0.6B
 ```
+
+## Correction (2026-09-24)
+
+A rerun of the committed scripts (`e59ad2a` plus path cleanup) reproduced the baseline and strip-boilerplate rows exactly and the headline overlap (50.4%). It did **not** reproduce the originally published multi-strategy and BM25 rows:
+
+| Row | Published 2026-09-18 | Rerun 2026-09-24 |
+|---|---|---|
+| + multi-strategy: character precision / complete-grounding | 6.5% / 50.1% | 7.2% / 49.5% |
+| + hybrid BM25: overlap / complete-grounding | 49.2% / 47.4% | 45.6% / 44.7% |
+
+Two reruns on 2026-09-24 gave identical numbers. So did a run with the pre-fix filter from commit `1af8f6a`: FAISS `-1` padding was reaching the result filters but never changed a returned top-5. stela's chunk byte ranges for all 15 contracts are identical at `e59ad2a` and today, and the Python environment is unchanged since 2026-09-18. The most likely cause (unverified) is that the original rows came from an uncommitted script revision. The result files are timestamped before the commit. The tables above now show the reproducible numbers. The conclusions stand, and BM25's penalty is larger than first reported.

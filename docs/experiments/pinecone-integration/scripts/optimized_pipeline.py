@@ -475,9 +475,9 @@ def retrieve(query, faiss_index, index_chunks, paragraph_chunks,
     query_emb = encode_texts(_global_model_tuple, [q])
     faiss.normalize_L2(query_emb)
     dense_scores, dense_raw_indices = faiss_index.search(query_emb, top_retrieve)
-    dense_indices = [int(i) for i in dense_raw_indices[0] if i < len(index_chunks)]
+    dense_indices = [int(i) for i in dense_raw_indices[0] if 0 <= i < len(index_chunks)]
     dense_score_list = [float(s) for s, i in zip(dense_scores[0], dense_raw_indices[0])
-                        if i < len(index_chunks)]
+                        if 0 <= i < len(index_chunks)]
 
     if args.hybrid_bm25 and bm25_index is not None:
         q_tokens = q.lower().split()
@@ -491,7 +491,7 @@ def retrieve(query, faiss_index, index_chunks, paragraph_chunks,
         result_scores = dense_score_list[:top_retrieve]
 
     retrieved = [(index_chunks[i], result_scores[rank])
-                 for rank, i in enumerate(result_indices) if i < len(index_chunks)]
+                 for rank, i in enumerate(result_indices) if 0 <= i < len(index_chunks)]
 
     if args.multi_strategy and paragraph_chunks is not index_chunks:
         sentence_chunks = [r[0] for r in retrieved]
