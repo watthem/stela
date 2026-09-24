@@ -1,0 +1,9 @@
+{
+  "name": "stela-local-rag-experiment",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@watthem/stela": "0.2.1",
+    "pg": "8.23.0"
+  }
+}
