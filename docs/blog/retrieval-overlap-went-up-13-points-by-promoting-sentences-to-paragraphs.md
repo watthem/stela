@@ -22,20 +22,20 @@ Step 3 only works if byte ranges from both strategies are in the same coordinate
 
 [Full results](../experiments/pinecone-integration/optimization-results.md):
 
-| Configuration | Retrieval Overlap | Precision@5 | Complete-Grounding@5 |
+| Configuration | Retrieval Overlap | Character precision@5 | Complete-Grounding@5 |
 |---|---|---|---|
 | stela paragraph (baseline) | 37.3% | 7.6% | 36.7% |
 | + strip boilerplate | 38.4% (+1.1pp) | 8.4% | 37.3% |
-| + multi-strategy promotion | **50.4% (+13.1pp)** | 6.5% | **50.1%** |
-| + hybrid BM25 (RRF) | 49.2% (-1.2pp) | 6.3% | 47.4% |
+| + multi-strategy promotion | **50.4% (+13.1pp)** | 7.2% | **49.5%** |
+| + hybrid BM25 (RRF) | 45.6% (-4.8pp) | 6.2% | 44.7% |
 
-A few contracts moved a lot: Todos Medical went from 39.1% to 84.8%. Xencor from 19.5% to 47.5%. Goosehead Insurance from 13.0% to 36.0%.
+A few contracts moved a lot: Todos Medical went from 39.1% to 84.8%. Xencor from 19.5% to 39.8%. Goosehead Insurance from 13.0% to 43.9%.
 
-Precision@5 and IoU@5 went down slightly. Promoting to paragraphs covers more ground truth characters but also pulls in surrounding context outside the annotated span. For RAG pipelines where the LLM needs clause-level context to reason about the answer, I'd take the recall. If you need tight extraction, stay at sentence level.
+Character precision@5 (relevant characters over returned characters) and IoU@5 went down slightly. Promoting to paragraphs covers more ground truth characters but also pulls in surrounding context outside the annotated span. For RAG pipelines where the LLM needs clause-level context to reason about the answer, I'd take the recall. If you need tight extraction, stay at sentence level.
 
 ## BM25 hybrid made things worse
 
-I tried BM25 with Reciprocal Rank Fusion (k=60) on top of multi-strategy promotion. It dropped retrieval overlap by 1.2pp. Legal text is full of "agreement," "party," and "shall," which give BM25 a noisy signal. The dense embeddings were already doing fine after boilerplate removal, and fusing in BM25 just diluted them.
+I tried BM25 with Reciprocal Rank Fusion (k=60) on top of multi-strategy promotion. It dropped retrieval overlap by 4.8pp. Legal text is full of "agreement," "party," and "shall," which give BM25 a noisy signal. The dense embeddings were already doing fine after boilerplate removal, and fusing in BM25 just diluted them.
 
 ## Caveats
 
@@ -56,3 +56,7 @@ cd docs/experiments/pinecone-integration
 Setup and dependencies are in the [experiment README](../experiments/pinecone-integration/README.md). Per-document breakdowns and metric definitions are in the [optimization results](../experiments/pinecone-integration/optimization-results.md).
 
 [@watthem/stela on npm](https://www.npmjs.com/package/@watthem/stela)
+
+---
+
+*Correction, 2026-09-24: a rerun of the committed benchmark reproduced the 37.3% → 50.4% headline but not two secondary rows. The BM25 hybrid costs 4.8pp, not 1.2pp. Multi-strategy character precision is 7.2% (was 6.5%) and complete-grounding is 49.5% (was 50.1%). Two per-contract examples changed. Details: `docs/experiments/pinecone-integration/optimization-results.md`.*
