@@ -2,7 +2,7 @@
 // Render Claude Code session transcripts (~/.claude/projects/<cwd-slug>/<session>.jsonl) as
 // Markdown that chunk.mjs can index and that citations can point into.
 //   node transcripts.mjs --out <dir> [--src ~/.claude/projects] [--projects slug,slug | --skip slug,slug]
-// Kept: operator turns, the assistant's visible text, and compaction summaries (dense recaps).
+// Kept: operator turns ("dispatch" in subagent transcripts), the assistant's visible text, and compaction summaries (dense recaps).
 // Dropped: thinking, tool calls and tool results (file dumps, command output), attachments,
 // meta and command records. Subagent transcripts (<session>/subagents/*.jsonl) render alongside.
 //
@@ -32,6 +32,8 @@ const text = (content) => typeof content === 'string' ? content
 const body = (s) => s.replace(/^(#{1,6}) /gm, (_, h) => `${'#'.repeat(Math.min(h.length + 2, 6))} `);
 
 function render(file, project) {
+  // In a subagent transcript the "user" is the dispatching agent, not the operator.
+  const asker = file.includes('/subagents/') ? 'dispatch' : 'operator';
   const recs = readFileSync(file, 'utf8').split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
   const session = basename(file, '.jsonl');
   const parts = [];
@@ -40,9 +42,9 @@ function render(file, project) {
     if ((r.type !== 'user' && r.type !== 'assistant') || r.isMeta) continue;
     const t = strip(text(r.message?.content));
     if (!t) continue;
-    const who = r.isCompactSummary ? 'summary' : r.type === 'user' ? 'operator' : 'assistant';
-    if (who === 'operator' && Array.isArray(r.message.content)) continue; // tool results
-    if (who === 'operator') n++;
+    const who = r.isCompactSummary ? 'summary' : r.type === 'user' ? asker : 'assistant';
+    if (who === asker && Array.isArray(r.message.content)) continue; // tool results
+    if (who === asker) n++;
     const when = (r.timestamp ?? '').slice(0, 16).replace('T', ' ');
     parts.push(`## ${n} · ${who} · ${when}\n\n${body(t)}\n\n<!-- record ${r.uuid} -->\n`);
   }
