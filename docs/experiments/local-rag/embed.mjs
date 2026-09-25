@@ -54,6 +54,6 @@ while (done < limit) {
   }
 }
 const secs = (Date.now() - t0) / 1000;
-const left = (await pool.query(`SELECT count(*)::int n FROM chunks c WHERE ${pending}`)).rows[0].n;
+const left = (await pool.query(`SELECT count(*)::int n FROM chunks c WHERE ${pending} ${kind ? 'AND kind=$1' : ''}`, kind ? [kind] : [])).rows[0].n;
 console.log(JSON.stringify({ embedded: done, seconds: +secs.toFixed(1), chunks_per_s: +(done / secs).toFixed(2), remaining: left }));
 await pool.end();

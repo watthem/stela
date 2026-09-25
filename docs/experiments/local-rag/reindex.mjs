@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Bring the index up to date after edits: chunk → load (incremental) → embed, for each model.
-//   node reindex.mjs <root> [--exclude 'glob,glob'] [--models qwen3-embedding:0.6b,embeddinggemma]
+//   node reindex.mjs <root> [--exclude 'glob,glob'] [--exclude-path p,p] [--min-verdict pass]
+//                    [--models qwen3-embedding:0.6b,embeddinggemma]
+// Pass the same exclusions and verdict filter the index was built with, or the index widens.
 // Unchanged files are skipped by hash and cached embeddings are reused, so after a small edit
 // only the edited file's new paragraphs are embedded. The first model is embedded fully;
 // further models get paragraphs only.
@@ -23,7 +25,8 @@ try {
   const out = join(dir, 'chunks.ndjson');
   const exclude = opt('--exclude');
   console.log('chunk', run('chunk.mjs', root, '--out', out, ...(exclude ? ['--exclude', exclude] : [])));
-  console.log('load ', run('load.mjs', out));
+  const loadArgs = ['--exclude-path', '--min-verdict'].flatMap(f => (opt(f) ? [f, opt(f)] : []));
+  console.log('load ', run('load.mjs', out, ...loadArgs));
   // Secondary models are paragraph-only (the model comparison runs at paragraph level).
   for (const [i, m] of models.entries())
     console.log(`embed ${m}`, run('embed.mjs', '--model', m, '--batch', '32', ...(i > 0 ? ['--kind', 'parent'] : [])));

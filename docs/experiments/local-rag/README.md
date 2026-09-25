@@ -58,6 +58,17 @@ node query.mjs "question" --model embeddinggemma              # search a second 
 
 Citations written inside notes (`path.md#bytes=s-e`, optionally `&sha256=<hex prefix>`) are exposed by the `cites` view. `trace.mjs` walks them backwards (recursively, re-checking each cited range on disk) and forwards (who cites this range). `reindex.mjs` runs chunk → incremental load → embed, so after a small edit only the new paragraphs are embedded.
 
+Agent transcripts (Claude Code keeps every session as JSONL under `~/.claude/projects/`, and by default deletes it after 30 days):
+
+```bash
+node transcripts.mjs --out ~/.local/share/stela-transcripts --projects <cwd-slug>,<cwd-slug>
+DATABASE_URL=.../transcripts node reindex.mjs ~/.local/share/stela-transcripts --min-verdict pass
+```
+
+This renders operator turns, assistant answers and compaction summaries as Markdown, and drops thinking, tool calls and tool results. Each turn ends with its JSONL record uuid. Reruns only append, so a citation into an earlier turn stays valid while the session is still running. On one workstation, 655 MB of JSONL became 7.9 MB of Markdown (251 sessions) in 6 s. Keep the rendered files and their database private: they hold whatever was said in those sessions.
+
+`load.mjs --min-verdict pass` keeps any paragraph that carries a byte-range citation, whatever its verdict. Hash-dense text reads as noise to the quality check, but it is exactly what `cites` and `trace.mjs` need.
+
 Model comparison, same 32 vault queries, paragraph vectors only, glossary prior, collapse on:
 
 | Model | MRR | doc@5 | ans@1500 | ans@500 |

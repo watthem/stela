@@ -12,6 +12,7 @@ const [file, ...rest] = process.argv.slice(2);
 const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : undefined; };
 const excluded = new Set((opt('--exclude-path') ?? '').split(',').filter(Boolean));
 const passOnly = opt('--min-verdict') === 'pass';
+const CITES = /\.md#bytes=\d+-\d+/;
 const force = rest.includes('--force');
 
 const docs = new Map();
@@ -35,7 +36,10 @@ for (const [path, { sha: docSha, rows }] of docs) {
   if (!force && existing.get(path) === docSha) { unchanged++; continue; }
   await db.query('DELETE FROM documents WHERE doc_path=$1', [path]);
   await db.query('INSERT INTO documents (doc_path, doc_sha256) VALUES ($1,$2)', [path, docSha]);
-  const keepParents = new Set(rows.filter(r => r.kind === 'parent' && (!passOnly || r.verdict === 'pass')).map(r => r.id));
+  // A paragraph that carries byte-range citations is kept whatever its verdict: hash-dense
+  // text reads as noise to the quality check, but it is exactly what `cites` and trace need.
+  const keepParents = new Set(rows.filter(r => r.kind === 'parent'
+    && (!passOnly || r.verdict === 'pass' || CITES.test(r.text))).map(r => r.id));
   const keep = rows.filter(r => keepParents.has(r.kind === 'parent' ? r.id : r.parent_id));
   // Parents before sentences so the FK holds; sentences equal to their parent are dropped.
   for (const kind of ['parent', 'sentence']) {
