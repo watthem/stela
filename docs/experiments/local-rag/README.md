@@ -48,6 +48,25 @@ embedding-atlas /somewhere/private/paragraphs.parquet --vector embedding --text 
 
 The Parquet file contains the indexed text. Keep it out of any published repository.
 
+Tracing and keeping the index current:
+
+```bash
+node trace.mjs notes/post.md --root /path/to/indexed/dir      # what a note rests on, and what cites it
+node reindex.mjs /path/to/indexed/dir --exclude '...' --models qwen3-embedding:0.6b,embeddinggemma
+node query.mjs "question" --model embeddinggemma              # search a second model's vectors
+```
+
+Citations written inside notes (`path.md#bytes=s-e`, optionally `&sha256=<hex prefix>`) are exposed by the `cites` view. `trace.mjs` walks them backwards (recursively, re-checking each cited range on disk) and forwards (who cites this range). `reindex.mjs` runs chunk → incremental load → embed, so after a small edit only the new paragraphs are embedded.
+
+Model comparison, same 32 vault queries, paragraph vectors only, glossary prior, collapse on:
+
+| Model | MRR | doc@5 | ans@1500 | ans@500 |
+|---|---|---|---|---|
+| `qwen3-embedding:0.6b` (1024-dim) | 0.34 | 0.69 | 0.44 | 0.38 |
+| `embeddinggemma` 300M (768-dim) | 0.32 | 0.72 | 0.53 | 0.28 |
+
+Dense-only (no lexical, no collapse), EmbeddingGemma leads: MRR 0.34 vs 0.24, ans@1500 0.56 vs 0.50. Neither model wins the full pipeline on every metric, and n=32. The practical result is that a model half the size, which can also run on a phone, costs no measurable quality here.
+
 `--root` re-reads each returned range from disk and compares it byte-for-byte. ✓ means the cited bytes are still what the file contains. ✗ STALE means the file changed after indexing.
 
 `load.mjs` is incremental. Unchanged files (same SHA-256) are skipped, changed files are replaced, and deleted files are removed. Embeddings are cached by the hash of the embedded text, so moved or duplicated text isn't re-embedded.

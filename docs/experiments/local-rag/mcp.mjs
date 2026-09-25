@@ -5,6 +5,7 @@
 //   search   hybrid retrieval via query.mjs; every hit is a verified byte range (✓/✗ against STELA_ROOT)
 //   related  files nearest to a given file (mean of its paragraph embeddings), for "what else covers this?"
 //   read     re-read an exact `path#bytes=s-e` citation from disk, optionally widened by N bytes
+//   trace    follow citations: what a passage rests on (recursively) and what cites it
 import { execFile } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -26,6 +27,8 @@ const tools = [
       prior: { type: 'string', description: "Optional path weights, e.g. 'glossary/**=0.5,journal/**=0.8'" } } } },
   { name: 'related', description: 'Files whose content is nearest to the given file (mean paragraph embedding). Use to find overlapping, duplicate or contradicting notes.',
     inputSchema: { type: 'object', required: ['path'], properties: { path: { type: 'string', description: 'Indexed path relative to the root' }, k: { type: 'integer', default: 10 } } } },
+  { name: 'trace', description: 'Follow byte-range citations from a note or passage: what it rests on (recursively, each source re-checked on disk: ok/changed/unpinned/out_of_range/missing) and which passages cite it.',
+    inputSchema: { type: 'object', required: ['target'], properties: { target: { type: 'string', description: 'path.md or path.md#bytes=s-e' }, depth: { type: 'integer', default: 3 } } } },
   { name: 'read', description: 'Read an exact citation (path#bytes=start-end) from disk, optionally widened by `context` bytes each side.',
     inputSchema: { type: 'object', required: ['source'], properties: { source: { type: 'string' }, context: { type: 'integer', default: 0 } } } },
 ];
@@ -61,7 +64,14 @@ function read({ source, context = 0 }) {
   return { source: `${m[1]}#bytes=${s}-${e}`, text: buf.subarray(s, e).toString('utf8') };
 }
 
-const handlers = { search, related, read };
+async function trace({ target, depth = 3 }) {
+  const a = [join(here, 'trace.mjs'), target, '--depth', String(depth), '--json'];
+  if (root) a.push('--root', root);
+  const { stdout } = await run('node', a, { maxBuffer: 64 << 20, env: process.env });
+  return JSON.parse(stdout);
+}
+
+const handlers = { search, related, read, trace };
 const send = (msg) => process.stdout.write(JSON.stringify({ jsonrpc: '2.0', ...msg }) + '\n');
 
 for await (const line of createInterface({ input: process.stdin })) {

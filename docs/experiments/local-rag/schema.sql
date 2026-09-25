@@ -34,3 +34,14 @@ CREATE TABLE IF NOT EXISTS embedding_cache (
   embedding     halfvec(1024) NOT NULL,
   PRIMARY KEY (embed_sha256, model)
 );
+
+-- Byte-range citations written inside indexed text (path.md#bytes=s-e[&sha256=hex]).
+-- A view, so it always matches the current index; trace.mjs walks it in both directions.
+-- The path part is greedy on purpose: in Postgres the first quantifier sets the whole RE's
+-- greediness, and a lazy path made (\d+) lazy too (bytes=0-31 matched as 0-3).
+CREATE OR REPLACE VIEW cites AS
+SELECT c.id AS from_id, c.doc_path AS from_path, m[1] AS to_path,
+       m[2]::bigint AS to_start, m[3]::bigint AS to_end, m[4] AS to_sha256
+FROM chunks c,
+     regexp_matches(c.text, '([^\s()<>\[\]`"''|#]+\.md)#bytes=(\d+)-(\d+)(?:&sha256=([0-9a-f]{8,64}))?', 'g') AS m
+WHERE c.kind = 'parent';

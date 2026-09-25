@@ -10,13 +10,15 @@
 // Near-duplicate parents collapse into the best-ranked one and are listed under `similar`:
 // templated lines (same opening words once dates/IDs are stripped, cosine >= 0.75) and
 // copies (cosine >= 0.97). --no-collapse turns this off.
+// --model <name> searches that model's vectors (see db.mjs profiles); --dense-kind parent limits the
+// dense side to paragraphs. Collapse always compares the primary model's paragraph vectors.
 // --prior 'glob=factor,...' multiplies the fused score of chunks whose path matches (e.g. 'glossary/**=0.5').
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { embed, pool, toVec } from './db.mjs';
+import { PRIMARY, VEC_TABLE, embed, pool, toVec } from './db.mjs';
 
 const args = process.argv.slice(2);
-const flagArgs = new Set(['--k', '--return', '--root', '--prior']);
+const flagArgs = new Set(['--k', '--return', '--root', '--prior', '--model', '--dense-kind']);
 const q = args.find((a, i) => !a.startsWith('--') && !flagArgs.has(args[i - 1]));
 if (!q) { console.error('usage: query.mjs "question" [--k 5] [--return sentence|window|parent] [--json]'); process.exit(2); }
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
@@ -25,6 +27,11 @@ const mode = opt('--return', 'window');
 const asJson = args.includes('--json');
 const root = opt('--root');
 const collapse = !args.includes('--no-collapse');
+const denseKind = opt('--dense-kind');
+if (denseKind && !['parent', 'sentence'].includes(denseKind)) throw new Error('--dense-kind is parent or sentence');
+const denseSrc = PRIMARY
+  ? `SELECT id, embedding FROM chunks WHERE embedding IS NOT NULL${denseKind ? ` AND kind = '${denseKind}'` : ''}`
+  : `SELECT v.id, v.embedding FROM ${VEC_TABLE} v${denseKind ? ` JOIN chunks c USING (id) WHERE c.kind = '${denseKind}'` : ''}`;
 const globRe = (g) => new RegExp('^' + g.split('**').map(p => p.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*')).join('.*') + '$');
 const priors = (opt('--prior', '') || '').split(',').filter(Boolean).map(x => { const [g, f] = x.split('='); return [globRe(g), Number(f)]; });
 const prior = (path) => priors.reduce((m, [re, f]) => (re.test(path) ? m * f : m), 1);
@@ -38,8 +45,7 @@ const [qv] = await embed([q], { query: true });
 const { rows: hits } = await pool.query(`
   WITH dense AS (
     SELECT id, row_number() OVER (ORDER BY embedding <=> $1::halfvec) AS r
-    FROM (SELECT id, embedding FROM chunks WHERE embedding IS NOT NULL
-          ORDER BY embedding <=> $1::halfvec LIMIT 50) d
+    FROM (${denseSrc} ORDER BY embedding <=> $1::halfvec LIMIT 50) d
   ), lexical AS (
     SELECT id, row_number() OVER (ORDER BY ts_rank_cd(tsv, query) DESC) AS r
     FROM chunks, CAST(replace(plainto_tsquery('english', $2)::text, ' & ', ' | ') AS tsquery) query
