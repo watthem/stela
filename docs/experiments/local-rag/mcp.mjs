@@ -38,7 +38,7 @@ async function search({ query, k = 8, return: mode = 'parent', prior }) {
   if (root) a.push('--root', root);
   if (prior) a.push('--prior', prior);
   const { stdout } = await run('node', a, { maxBuffer: 64 << 20, env: process.env });
-  return JSON.parse(stdout).map(r => ({ source: r.source, verified: r.verified, score: r.score, similar: r.similar, text: r.text }));
+  return JSON.parse(stdout).map(r => ({ source: r.source, verified: r.verified, truncated: r.truncated, score: r.score, similar: r.similar, text: r.text }));
 }
 
 async function related({ path, k = 10 }) {

@@ -18,12 +18,13 @@ import { join } from 'node:path';
 import { PRIMARY, VEC_TABLE, embed, pool, toVec } from './db.mjs';
 
 const args = process.argv.slice(2);
-const flagArgs = new Set(['--k', '--return', '--root', '--prior', '--model', '--dense-kind']);
+const flagArgs = new Set(['--k', '--return', '--root', '--prior', '--model', '--dense-kind', '--max-bytes']);
 const q = args.find((a, i) => !a.startsWith('--') && !flagArgs.has(args[i - 1]));
 if (!q) { console.error('usage: query.mjs "question" [--k 5] [--return sentence|window|parent] [--json]'); process.exit(2); }
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const k = Number(opt('--k', 5));
 const mode = opt('--return', 'window');
+const maxBytes = Number(opt('--max-bytes', 4000));
 const asJson = args.includes('--json');
 const root = opt('--root');
 const collapse = !args.includes('--no-collapse');
@@ -102,8 +103,20 @@ for (const [pid, hit] of byParent) {
     const s = Number(lo.byte_start), e = Number(hi.byte_end);
     ctx = { start: s, end: e, text: pbuf.subarray(s - parent.byte_start, e - parent.byte_start).toString('utf8') };
   }
+  // Cap each hit so one call can't exceed the harness result limit (a sentence-less file is one
+  // huge "sentence"). Cut on a UTF-8 boundary and shrink the cited range to match, so the
+  // citation stays byte-exact and verifiable; `truncated` tells the reader to `read` the rest.
+  let truncated = false;
+  if (Buffer.byteLength(ctx.text, 'utf8') > maxBytes) {
+    const buf = Buffer.from(ctx.text, 'utf8');
+    let cut = maxBytes;
+    while (cut > 0 && (buf[cut] & 0xc0) === 0x80) cut--;
+    ctx = { start: ctx.start, end: Number(ctx.start) + cut, text: buf.subarray(0, cut).toString('utf8') };
+    truncated = true;
+  }
   results.push({
     source: `${parent.doc_path}#bytes=${ctx.start}-${ctx.end}`,
+    truncated,
     match: { kind: hit.kind, bytes: [Number(hit.byte_start), Number(hit.byte_end)], dense_rank: hit.dense_rank, lexical_rank: hit.lexical_rank },
     parent_sha256: parent.content_sha256,
     score: Number(hit.score).toFixed(4),
