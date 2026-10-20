@@ -56,6 +56,12 @@ node reindex.mjs /path/to/indexed/dir --exclude '...' --models qwen3-embedding:0
 node query.mjs "question" --model embeddinggemma              # search a second model's vectors
 ```
 
+To reindex only some files against a live index (for example after a bulk move or link rewrite), use `reindex-paths.mjs`. It never sweeps in other files and never deletes other documents: a listed path that exists is re-chunked (unchanged files are skipped by hash, so their chunk ids stay), and a listed path that no longer exists is removed from the index.
+
+```bash
+DATABASE_URL=.../vault node reindex-paths.mjs ~/Vaults --list paths.txt --models qwen3-embedding:0.6b,embeddinggemma
+```
+
 Citations written inside notes (`path.md#bytes=s-e`, optionally `&sha256=<hex prefix>`) are exposed by the `cites` view. `trace.mjs` walks them backwards (recursively, re-checking each cited range on disk) and forwards (who cites this range). `reindex.mjs` runs chunk → incremental load → embed, so after a small edit only the new paragraphs are embedded.
 
 Agent transcripts (Claude Code keeps every session as JSONL under `~/.claude/projects/`, and by default deletes it after 30 days):
