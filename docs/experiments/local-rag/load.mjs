@@ -3,6 +3,9 @@
 // skipped, changed ones are replaced, missing ones are deleted. Embeddings are reused from
 // embedding_cache when the embedded text is identical.
 //   node load.mjs chunks.ndjson [--exclude-path path,path] [--min-verdict pass] [--force]
+//                              [--only] [--remove path,path]
+// --only: the ndjson is a partial set of documents; touch only those (and --remove paths),
+//   never delete documents that are absent from it. Used by reindex-paths.mjs.
 // --force reloads every document even if unchanged (use after changing how chunk.mjs chunks).
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
@@ -14,6 +17,8 @@ const excluded = new Set((opt('--exclude-path') ?? '').split(',').filter(Boolean
 const passOnly = opt('--min-verdict') === 'pass';
 const CITES = /\.md#bytes=\d+-\d+/;
 const force = rest.includes('--force');
+const only = rest.includes('--only');
+const toRemove = (opt('--remove') ?? '').split(',').filter(Boolean);
 
 const docs = new Map();
 for await (const line of createInterface({ input: createReadStream(file) })) {
@@ -29,7 +34,10 @@ const existing = new Map((await db.query('SELECT doc_path, doc_sha256 FROM docum
   .map(r => [r.doc_path, r.doc_sha256]));
 let replaced = 0, unchanged = 0, removed = 0, inserted = 0;
 await db.query('BEGIN');
-for (const path of existing.keys()) {
+for (const path of toRemove) {
+  if (existing.has(path) && !docs.has(path)) { await db.query('DELETE FROM documents WHERE doc_path=$1', [path]); removed++; }
+}
+for (const path of only ? [] : existing.keys()) {
   if (!docs.has(path)) { await db.query('DELETE FROM documents WHERE doc_path=$1', [path]); removed++; }
 }
 for (const [path, { sha: docSha, rows }] of docs) {
