@@ -17,12 +17,16 @@ export const pool = new pg.Pool({
 });
 export const toVec = (a) => `[${a.join(',')}]`;
 
-/** Embed texts with Ollama, applying the model's query/document prompt. */
+/** Embed texts with Ollama, applying the model's query/document prompt.
+ * Query embeddings load the model on CPU: a cold CPU load takes ~3 s against ~15-20 s for the
+ * partial GPU load, warm latency is the same (~0.1 s) and the vectors match (cosine 1.0), so a
+ * search no longer waits on the GPU or competes with another user for it. STELA_QUERY_GPU=1 reverts. */
 export async function embed(texts, { query = false, truncate = false } = {}) {
   const input = texts.map(query ? PROFILE.query : PROFILE.doc);
+  const options = query && process.env.STELA_QUERY_GPU !== '1' ? { num_gpu: 0 } : undefined;
   const res = await fetch(`${OLLAMA}/api/embed`, {
     method: 'POST',
-    body: JSON.stringify({ model: MODEL, input, truncate, keep_alive: '2m' }),
+    body: JSON.stringify({ model: MODEL, input, truncate, keep_alive: '2m', options }),
   });
   if (!res.ok) throw new Error(`ollama ${res.status}: ${await res.text()}`);
   return (await res.json()).embeddings;
