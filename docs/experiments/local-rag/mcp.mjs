@@ -18,8 +18,16 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.STELA_ROOT;
 const run = promisify(execFile);
 
+// Sent in `initialize`. Clients that defer MCP tools (Claude Code's ToolSearch) still show server
+// instructions in the system prompt, so this is the one place an agent learns the tools exist.
+const instructions = `Local semantic + keyword search over the indexed notes${root ? ` in ${root}` : ''}, with byte-exact citations.
+Use it before grep for "does a note on X exist", related notes, or a concept whose exact wording you do not know; grep stays right for exact strings and filenames.
+If the tools are deferred, load them first: ToolSearch "select:mcp__stela-rag__search,mcp__stela-rag__related,mcp__stela-rag__read".
+search -> cite the returned path#bytes=start-end; read -> re-read or widen a citation; related -> near-duplicate or overlapping notes for a file; trace -> what a cited passage rests on and what cites it.
+verified=false means the file changed since indexing: re-read it from disk.`;
+
 const tools = [
-  { name: 'search', description: 'Search the indexed notes by meaning and keywords. Returns exact, verified source citations (path#bytes=start-end) with their text. Near-duplicates are folded into `similar`.',
+  { name: 'search', description: 'Search the indexed notes by meaning and keywords; use before grep for concept lookups. Returns exact, verified source citations (path#bytes=start-end) with their text. Near-duplicates are folded into `similar`.',
     inputSchema: { type: 'object', required: ['query'], properties: {
       query: { type: 'string' },
       k: { type: 'integer', default: 8 },
@@ -81,7 +89,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   const { id, method, params } = req;
   if (id === undefined) continue; // notifications (initialized, cancelled)
   try {
-    if (method === 'initialize') send({ id, result: { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'stela-rag', version: '0.1.0' } } });
+    if (method === 'initialize') send({ id, result: { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'stela-rag', version: '0.1.0' }, instructions } });
     else if (method === 'tools/list') send({ id, result: { tools } });
     else if (method === 'tools/call') {
       const fn = handlers[params?.name];
